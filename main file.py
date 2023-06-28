@@ -101,7 +101,7 @@ def where_am_i (mouse_pos:list):
         Args:
             grid (list): the grid of the game
             position (list): the position of the mouse
-            turn (_type_): who's turn (white or black)
+            turn (int): who's turn (white or black)
 
         Returns:
             list : a list who contain a grid of all the place the piece can go (Y are for "the piece can go there)
@@ -132,7 +132,7 @@ def mouvement(grid:list,position:list,turn:int) :
         turn (int): who's turn (white or black)
 
     Returns:
-        _type_: a list with the moove of the piece
+        list: a list with the moove of the piece
     """    
     
     piece = grid[position[0]][position[1]] # piece is the piece who is click on it's a string who's first letter is "W" or "B" for the colour and the second letter is the type of piece ("T" for rook/tower,"B" for bishop,"N" for knight,"Q" for queen,"K"for king,"P" for pawn)
@@ -313,7 +313,7 @@ def mouvement(grid:list,position:list,turn:int) :
     if type_of_piece == "P":
             if turn == 0:
                 if grid[position[0]-1][position[1]] == "--" :
-                    plays_allowed.append([position[0]-1,position[1]])
+                    plays_allowed.append([position[0]-1,position[1]])  
                 if position[0] == 6 and grid[position[0]-2][position[1]] == "--":
                     plays_allowed.append([position[0]-2,position[1]])
                 if position[1] != 0 :
@@ -335,28 +335,51 @@ def mouvement(grid:list,position:list,turn:int) :
                         plays_allowed.append([position[0]+1,position[1]+1])
     if turn == 0 :
         for play in plays_allowed :
-            if play[0] >= 0 and play[0] < 8 and play[1] >= 0 and play[1] < 8: 
-                if color_of_piece=="W":
-                    if grid[play[0]][play[1]][0] != "W" :
+            if play[0] >= 0 and play[0] < 8 and play[1] >= 0 and play[1] < 8: #we delete every number who are not in the grid
+                if color_of_piece=="W": 
+                    if grid[play[0]][play[1]][0] != "W" : #we don't go in a spot who is the same color
                         final_play.append(play)
     else :
         for play in plays_allowed :
-            if play[0] >= 0 and play[0] < 8 and play[1] >= 0 and play[1] < 8: 
+            if play[0] >= 0 and play[0] < 8 and play[1] >= 0 and play[1] < 8:  #we delete every number who are not in the grid
                 if color_of_piece=="B":
-                    if grid[play[0]][play[1]][0] != "B" :
+                    if grid[play[0]][play[1]][0] != "B" : #we don't go in a spot who is the same color
                         final_play.append(play)   
     return final_play,position
 
 def can_moove (position:list,old_mouvement_grid):
+    """
+    check if the position the position we are going is on the mouvement_grid
+
+    Args:
+        position (list): position with the mouse on the grid
+        old_mouvement_grid (list): the grid stocking the mouvement list
+
+    Returns:
+        bool : return true if we can go
+    """    
     if mouvement_grid[position[0]][position[1]] == "Y":
         return True
     return False
 
 def play(position, grid_of_the_game, selected_piece):
+    """
+    we moving the piece on the board
+
+    Args:
+        position (list): position of the mouse
+        grid_of_the_game (list): the grid of the game
+        selected_piece (list): the position of the piece we are moving
+
+    Returns:
+        list: the updated list
+    """    
     which_piece = None
+    #we are updating our list
     piece = grid_of_the_game[selected_piece[0]][selected_piece[1]]
     grid_of_the_game[position[0]][position[1]] = piece
     grid_of_the_game[selected_piece[0]][selected_piece[1]] = "--"
+    #if the pawn is on the last line we can transform him in different piece
     if grid_of_the_game[position[0]][position[1]][1] == "P":
         if grid_of_the_game[position[0]][position[1]][0] == "W":
             if position[0] == 0:
@@ -374,6 +397,14 @@ def play(position, grid_of_the_game, selected_piece):
     return grid_of_the_game
 
 def change_turn(turn:int):
+    """
+    changing the turn
+    Args:
+        turn (int): the turn value
+
+    Returns:
+        turn: the turn changed
+    """    
     if turn == 1 :
         return 0
     else :
@@ -386,7 +417,7 @@ def show_possibilty(grid:list,position:list,turn):
     Args:
         grid (list): the grid of the game
         position (list): the position of the mouse
-        turn (_type_): who's turn (white or black)
+        turn (int): who's turn (white or black)
 
     Returns:
             list : a list who contain a grid of all the place the piece can go (Y are for "the piece can go there)
@@ -427,6 +458,14 @@ def display_possibilty (mouvement_grid:list) :
                 pygame.draw.rect(screen,"yellow",[axis_value[x],axis_value[y],75,75])
 
 def diagonale_right (position:list):
+    """
+    creating the diagonale →↓ for the mouvement function
+    Args:
+        position (list): the position 
+
+    Returns:
+        list: list of position which will be used for the mouvement function
+    """    
     plays = []
     y = position[0]
     x = position[1]
@@ -434,7 +473,7 @@ def diagonale_right (position:list):
         x -= 1
         y -= 1
         plays.append([y,x])
-    plays = list(reversed(plays))
+    plays = list(reversed(plays)) # we are reversed because a wall can block us
     y = position[0]
     x = position[1]
     while x < 7 and y < 7 :
@@ -444,13 +483,21 @@ def diagonale_right (position:list):
     return plays
 
 def diagonale_left (position:list) :
+    """
+    creating the diagonale →↑ for the mouvement func
+    Args:
+        position (list): the position 
+
+    Returns:
+        list: list of position which will be used for the mouvement function
+    """    
     plays = []
     y = position[0]
     x = position[1]
     while x >= 0 and y < 7 :
         x -= 1
         y += 1
-        plays.append([y,x])
+        plays.append([y,x])   #we are reversed because a wall can block us 
     plays = list(reversed(plays))
     y = position[0]
     x = position[1]
@@ -461,61 +508,95 @@ def diagonale_left (position:list) :
     return plays
 
 def there_is_a_check(position,grid,selected_piece,turn):
+    """
+    we are looking if the play there is a check situation
+    Args:
+        position (list): the position of piece moved
+        grid (list): the grid
+        selected_piece (list): the position of piece moved
+        turn (int): the turn number
+
+    Returns:
+        bool: true if the piece is check , False if there is no check
+    """    
     
-    fake_grid = copy.deepcopy(grid)
-    piece = grid[selected_piece[0]][selected_piece[1]]
+    fake_grid = copy.deepcopy(grid) # we need the deepcopy function because we will modying the "fake_grid" but not the grid
+    piece = grid[selected_piece[0]][selected_piece[1]] 
     fake_grid[position[0]][position[1]] = piece
     fake_grid[selected_piece[0]][selected_piece[1]] = "--"
     check_list = []
     random_piece = None
     check = None
-    check,random_piece = check_for_a_check(fake_grid,turn)
+    check,random_piece = check_for_a_check(fake_grid,turn) #importing the check_for_a_check function 
     return check,random_piece
 
 def check_for_a_check(fake_grid,turn):
+    """
+    return true if the king is check
+    Args:
+        fake_grid (list): the list of the game
+        turn (int): the turn
+
+    Returns:
+        bool: true if check ,False if not
+    """    
     random_piece = None
     for line in range(len(fake_grid)):
             for piece in range(len(fake_grid[line])):
                 if turn == 0 :
-                    if fake_grid[line][piece][0] == "B":
-                        list_of_plays,random_piece = mouvement(fake_grid,[line,piece],1)
+                    if fake_grid[line][piece][0] == "B": #if it's an enely piece
+                        list_of_plays,random_piece = mouvement(fake_grid,[line,piece],1) #we are checking the position this piece can go
                         for plays in list_of_plays:
-                            if fake_grid[plays[0]][plays[1]] == "WK":
+                            if fake_grid[plays[0]][plays[1]] == "WK": # if this piece can go on the position of the king that's mean it's check and then we are returning true
                                 return True,random_piece
                 else :
-                    if fake_grid[line][piece][0] == "W":
-                        list_of_plays,random_piece = mouvement(fake_grid,[line,piece],0)
+                    if fake_grid[line][piece][0] == "W": #if it's an enely piece
+                        list_of_plays,random_piece = mouvement(fake_grid,[line,piece],0) #we are checking the position this piece can go
                         for plays in list_of_plays:
-                            if fake_grid[plays[0]][plays[1]] == "BK":
+                            if fake_grid[plays[0]][plays[1]] == "BK": # if this piece can go on the position of the king that's mean it's check and then we are returning true
                                 return True,random_piece
     return False,random_piece
 
 def check_mate(turn,grid):
+    """
+    if there is a check mate True if yes , False if no, Pat if there is a pat
+    to verify if there is a check we will :
+    1: looking if in all the position of the king can go he will be check
+    2: looking if an ally piece can't go between or on the piece who check the kink and the king
+    Args:
+        turn (list): the turn integral
+        grid (list): the grid of the game
+
+    Returns:
+        bool or str: if there is a check mate True if yes , False if no, Pat if there is a pat
+    """    
     where_king_can_go  = None
     position_to_go = []
     where_does_my_piece_can_go = []
+    number = 0
     if turn == 1:
-        check,random_piece = check_for_a_check(grid,0)
         for line in range(len(grid)):
             for piece in range(len(grid[line])):
-                if grid[line][piece] == "WK":
+                if grid[line][piece] == "WK": #if it's the king we are save his position
                     position = [line,piece]
                 else:
-                    if grid[line][piece][0] == "W":
-                        position_of_white_piece = [line,piece]
-                        where_my_piece_can_go,random_piece = mouvement(grid,position_of_white_piece,0)
+                    if grid[line][piece][0] == "W": # else if it's an ally piece  
+                        where_my_piece_can_go,random_piece = mouvement(grid,[line,piece],0)
+                        where_does_my_piece_can_go.append((random_piece))
                         for mouvement_of_piece in where_my_piece_can_go:
-                            where_does_my_piece_can_go.append(mouvement_of_piece)
-        where_king_can_go,selected_piece = mouvement(grid,position,0)
+                            where_does_my_piece_can_go.append(mouvement_of_piece) #save the position of this piece can go
+                            number += 1 
+        where_king_can_go,selected_piece = mouvement(grid,position,0) # also save the mouvement of the king
         for plays in where_king_can_go:
-            check,random_piece = there_is_a_check(plays,grid,selected_piece,0)
-            if check == False:
-                return False
-        check,position_of_the_piece_who_moove = check_for_a_check(grid,0)
-        piece = grid[position_of_the_piece_who_moove[0]][position_of_the_piece_who_moove[1]]
-        if where_does_my_piece_can_go != []:
-            if piece[1] == "T" or piece[1] == "Q":
-                if position_of_the_piece_who_moove[0] == position[0] :
+            check,random_piece = there_is_a_check(plays,grid,selected_piece,0) # we are trying to moove the king on every position and looking if it's check in this new position
+            if check == False: #if not it's not a checkmate
+                return False 
+        check,position_of_the_piece_who_moove = check_for_a_check(grid,0)#we look if it's a check in this actual position (this will be used in the "pat" part) and returning the piece who is checking us
+        # 1 :  first part is done 
+        piece = grid[position_of_the_piece_who_moove[0]][position_of_the_piece_who_moove[1]] #we are looking about the piece who is actually check us
+        if number != 0 : #if there is a piece who can moove
+            if piece[1] == "T" or piece[1] == "Q": #if it's a rook or a queen
+                if position_of_the_piece_who_moove[0] == position[0] : 
                     if position_of_the_piece_who_moove[1] < position[1] :
                         difference = position[1]-position_of_the_piece_who_moove[1]-1
                         for value in range(1,difference):
@@ -555,9 +636,14 @@ def check_mate(turn,grid):
             position_to_go.append([position_of_the_piece_who_moove[0],position_of_the_piece_who_moove[1]])
             for play in where_does_my_piece_can_go:
                 for go_here in position_to_go:
-                    if play[0]==go_here[0]:
-                        if play[1] == go_here[1]:
-                            return False
+                    if type(play) == list :
+                        if play[0]==go_here[0]:
+                            if play[1] == go_here[1]:
+                                check_info,random_piece = there_is_a_check(position,grid,play,0)
+                                if check == False :
+                                    return False
+                    else :
+                        position = play
         else :
             if check == False :
                 return("pat")
@@ -571,8 +657,10 @@ def check_mate(turn,grid):
                     if grid[line][piece][0] == "B":
                         position_of_black_piece = [line,piece]
                         where_my_piece_can_go,random_piece = mouvement(grid,position_of_black_piece,1)
+                        where_does_my_piece_can_go.append((random_piece))
                         for mouvement_of_piece in where_my_piece_can_go:
                             where_does_my_piece_can_go.append(mouvement_of_piece)
+                            number += 1
         where_king_can_go,selected_piece = mouvement(grid,position,1)
         for plays in where_king_can_go:
             check,randown_piece = there_is_a_check(plays,grid,selected_piece,1)
@@ -580,7 +668,7 @@ def check_mate(turn,grid):
                 return False
         check,position_of_the_piece_who_moove = check_for_a_check(grid,1)
         piece = grid[position_of_the_piece_who_moove[0]][position_of_the_piece_who_moove[1]]
-        if where_does_my_piece_can_go != []:
+        if number != 0:
             if piece[1] == "T" or piece[1] == "Q":
                 if position_of_the_piece_who_moove[0] == position[0] :
                     if position_of_the_piece_who_moove[1] < position[1] :
@@ -622,9 +710,14 @@ def check_mate(turn,grid):
             position_to_go.append([position_of_the_piece_who_moove[0],position_of_the_piece_who_moove[1]])
             for play in where_does_my_piece_can_go:
                 for go_here in position_to_go:
-                    if play[0]==go_here[0]:
-                        if play[1] == go_here[1]:
-                            return False
+                    if type(play) == list :
+                        if play[0]==go_here[0]:
+                            if play[1] == go_here[1]:
+                                check_info,random_piece = there_is_a_check(position,grid,play,1)
+                                if check == False :
+                                    return False
+                    else :
+                        position = play
         else :
             if check == False :
                 return("pat")
