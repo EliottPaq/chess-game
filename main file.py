@@ -847,7 +847,6 @@ while True :
                             if grid[position[0]][position[1]][1]  == "P":
                                 difference = position[0]-selected_piece[0]
                                 if difference == 2 or difference == -2 :
-                                    print("en passant")
                                     en_passant,pos_of_en_passant = True,position
                                 else :
                                     en_passant = False
@@ -903,7 +902,6 @@ while True :
                                 difference_x = pos_of_en_passant[1]-selected_piece[1]
                                 if difference_x == 1 or difference_x == -1:
                                     if selected_piece[0] == pos_of_en_passant[0] :
-                                        print('je peut te baiser')
                                         mouvement_grid = en_passant_mouvement(mouvement_grid,position,pos_of_en_passant,turn)
                         if turn == 0 :
                             if grid[selected_piece[0]][selected_piece[1]] == "WK":
