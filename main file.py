@@ -4,63 +4,83 @@ import copy
 
 
 def print_board () :
-    axis_value = [0,75,150,225,300,375,450,525]
-    color_value = 0 
+    """t
+    his function just print the grid (white and black square)
+    """    
+    
+    axis_value = [0,75,150,225,300,375,450,525] #those value are the limit of each square in x and y axis
+    color_value = 0 #this value is need to set a variable color
     for y in axis_value :
         for x in axis_value :
             if color_value == 0 :
-                pygame.draw.rect(screen,"white",[x,y,75,75])
-                if x != 525 :
+                pygame.draw.rect(screen,"white",[x,y,75,75]) #75,75 is the height and length of each square
+                if x != 525 :# at the last rectangle we are not changing the color because otherwise it wouldnt be a real chess board
                     color_value = 1
             elif color_value== 1 :
-                pygame.draw.rect(screen,"black",[x,y,75,75])
+                pygame.draw.rect(screen,"black",[x,y,75,75]) #75,75 is the height and length of each square
                 if x != 525:
-                    color_value = 0
+                    color_value = 0# at the last rectangle we are not changing the color because otherwise it wouldnt be a real chess board
 
 def print_piece (grid:list) :
-    axis_value = [0,75,150,225,300,375,450,525]
+    """
+    this function is adding the piece on the board
+    Args:
+        grid (list): it's the list who contain all our piece
+    """    
+    
+    axis_value = [0,75,150,225,300,375,450,525]#those value are the limit of each square in x and y axis
     for row_number,row in enumerate(grid):
         for column,piece in enumerate(row) :
             if piece[0] == "W":
                 if piece[1] == "T" :
-                    white_tower_surf = white_tower_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_tower_surf = white_tower_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_tower_sprite,white_tower_surf)
                 if piece[1] == "N" :
-                    white_knight_surf = white_knight_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_knight_surf = white_knight_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_knight_sprite,white_knight_surf)
                 if piece[1] == "B" :
-                    white_bishop_surf = white_bishop_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_bishop_surf = white_bishop_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_bishop_sprite,white_bishop_surf)
                 if piece[1] == "Q" :
-                    white_queen_surf = white_queen_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_queen_surf = white_queen_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_queen_sprite,white_queen_surf)
                 if piece[1] == "K" :
-                    white_king_surf = white_king_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_king_surf = white_king_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_king_sprite,white_king_surf)
                 if piece[1] == "P" :
-                    white_pawn_surf = white_pawn_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    white_pawn_surf = white_pawn_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(white_pawn_sprite,white_pawn_surf)
             elif piece[0] =="B" :
                 if piece[1] == "T" :
-                    black_tower_surf = black_tower_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_tower_surf = black_tower_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_tower_sprite,black_tower_surf)
                 if piece[1] == "N" :    
-                    black_knight_surf = black_knight_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_knight_surf = black_knight_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_knight_sprite,black_knight_surf)
                 if piece[1] == "B" :
-                    black_bishop_surf = black_bishop_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_bishop_surf = black_bishop_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_bishop_sprite,black_bishop_surf)
                 if piece[1] == "Q" :
-                    black_queen_surf = black_queen_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_queen_surf = black_queen_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_queen_sprite,black_queen_surf)
                 if piece[1] == "K" :
-                    black_king_surf = black_king_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_king_surf = black_king_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_king_sprite,black_king_surf)
                 if piece[1] == "P" :
-                    black_pawn_surf = black_pawn_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5))
+                    black_pawn_surf = black_pawn_sprite.get_rect(center = (axis_value[column]+37.5,axis_value[row_number]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                     screen.blit(black_pawn_sprite,black_pawn_surf)
 
 def where_am_i (mouse_pos:list):
+    """
+    we are transforming the mouse_pos in a place in our grid who is readable
+
+    Args:
+        mouse_pos (list): our mouse position [x,y]
+
+    Returns:
+        list: the position of our mouse in the grid
+    """    
+    
     mouse_x = mouse_pos[0]
     mouse_y = mouse_pos[1]
     x = -1
@@ -74,7 +94,19 @@ def where_am_i (mouse_pos:list):
     pos = [y,x]
     return pos
 
-def show_possibilty(grid:list,position:list,turn):
+    def show_possibilty(grid:list,position:list,turn):
+        """
+        we are taking our grid,our position , and the turn to know where the piece which we click on can go 
+
+        Args:
+            grid (list): the grid of the game
+            position (list): the position of the mouse
+            turn (_type_): who's turn (white or black)
+
+        Returns:
+            list : a list who contain a grid of all the place the piece can go (Y are for "the piece can go there)
+        """        
+        
     mouvement_grid = [
     ["--","--","--","--","--","--","--","--"],
     ["--","--","--","--","--","--","--","--"],
@@ -85,42 +117,56 @@ def show_possibilty(grid:list,position:list,turn):
     ["--","--","--","--","--","--","--","--"],
     ["--","--","--","--","--","--","--","--"],   
     ]
-    plays,selected_piece = mouvement(grid,position,turn)
+    #this "mouvement_grid" will be modifying she will contain all the place the piece can go
+    plays,selected_piece = mouvement(grid,position,turn) #we need mouvement function which will give us all the position of the piece can go
     for play in plays :
-        mouvement_grid[play[0]][play[1]] = "Y"
+        mouvement_grid[play[0]][play[1]] = "Y" #transforming empty slot into "Y"
     return selected_piece,mouvement_grid
 
 def mouvement(grid:list,position:list,turn:int) :
-    piece = grid[position[0]][position[1]]
-    type_of_piece = piece[1]
-    color_of_piece = piece[0]
-    plays_allowed = []
+    """
+    we analyse the grid , the position and ,who's turn is to return a list with all the moove the piece who is choose can go
+    Args:
+        grid (list): our chess board
+        position (list): the position of the piece clicked
+        turn (int): who's turn (white or black)
+
+    Returns:
+        _type_: a list with the moove of the piece
+    """    
+    
+    piece = grid[position[0]][position[1]] # piece is the piece who is click on it's a string who's first letter is "W" or "B" for the colour and the second letter is the type of piece ("T" for rook/tower,"B" for bishop,"N" for knight,"Q" for queen,"K"for king,"P" for pawn)
+    type_of_piece = piece[1] # we are storing the type of our piece
+    color_of_piece = piece[0] # we are storing the colour of our piece
+    plays_allowed = [] # those are usefull  
     plays_tempory_allowed = []
     stock_of_play = []
     final_play = []
-    if type_of_piece == "T":
-        mur = True
-        for x_value,piece in enumerate(grid[position[0]]):
-            if mur == True :
+    
+    if type_of_piece == "T": #if the piece is a rook/tower
+        wall = True 
+        for x_value,piece in enumerate(grid[position[0]]): #we are analysing the line where the tower is
+            if wall == True :
                     if piece == "--":
-                        plays_tempory_allowed.append([position[0],x_value])
-                    else:
-                        if x_value < position[1]:
-                            plays_tempory_allowed.clear()
-                            plays_tempory_allowed.append([position[0],x_value])
-                        if x_value > position[1]:
-                            plays_tempory_allowed.append([position[0],x_value])
-                            mur = False 
+                        plays_tempory_allowed.append([position[0],x_value]) #if it's an empty slot we add into the list
+                    else: #if it's not an empty slot
+                        if x_value < position[1]: #if it's the a wall before (in term of list reading) the rook/tower
+                            plays_tempory_allowed.clear() # we are deleting all the value because the wall stop the rook/tower
+                            plays_tempory_allowed.append([position[0],x_value]) # we add the piece who block us
+                        if x_value > position[1]: # if the wall is after the rook/tower
+                            plays_tempory_allowed.append([position[0],x_value]) #we add the piece
+                            wall = False # set this value to stop the line reading
             
         for plays in plays_tempory_allowed:
-            plays_allowed.append(plays)
-        plays_tempory_allowed.clear()
-        stock_of_play.clear()
-        mur = True
+            plays_allowed.append(plays) #we are adding all the moove we choose before into a almost final list
+        plays_tempory_allowed.clear() #empty this list
+
+        # we know how add the play of a rook for the line it's not different for the column
         for line in range(len(grid)):
-            stock_of_play.append(grid[line][position[1]])
+            stock_of_play.append(grid[line][position[1]]) #we are "transforming" our column into a list 
+        #we do the exact same thing we do for the line 
         for y_value,piece in enumerate(stock_of_play):
-            if mur == True :
+            if wall == True :
                 if piece == "--":
                     plays_tempory_allowed.append([y_value,position[1]])
                 else:
@@ -129,15 +175,17 @@ def mouvement(grid:list,position:list,turn:int) :
                         plays_tempory_allowed.append([y_value,position[1]])
                     if y_value > position[0]:
                         plays_tempory_allowed.append([y_value,position[1]])
-                        mur = False
+                        wall = False
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
             
-    if type_of_piece == "B":
-            mur = True
-            stock_of_play = diagonale_right(position)
+    if type_of_piece == "B": # if the piece is a bishop
+        
+            wall = True
+            stock_of_play = diagonale_right(position) # we are calling a function who give us a list of the diagonale who go like this →↓ 
+            # we do the same thing we for the line of the rook
             for play in stock_of_play:
-                if mur == True :
+                if wall == True :
                     if grid[play[0]][play[1]] == "--":
                         plays_tempory_allowed.append(play)
                     else:
@@ -146,16 +194,17 @@ def mouvement(grid:list,position:list,turn:int) :
                             plays_tempory_allowed.append(play)
                         if play[1] > position[1]:
                             plays_tempory_allowed.append(play)
-                            mur = False
+                            wall = False
                     
             for plays in plays_tempory_allowed:
                 plays_allowed.append(plays)
             plays_tempory_allowed.clear()
             
-            stock_of_play = diagonale_left(position)
-            mur = True
+            stock_of_play = diagonale_left(position) # we are calling a function who give us a list of the diagonale who go like this →↑ 
+            wall = True
+            #and again same strategy 
             for play in stock_of_play:
-                if mur == True :
+                if wall == True :
                     if grid[play[0]][play[1]] == "--":
                         plays_tempory_allowed.append(play)
                     else:
@@ -164,16 +213,17 @@ def mouvement(grid:list,position:list,turn:int) :
                             plays_tempory_allowed.append(play)
                         if play[1] > position[1]:
                             plays_tempory_allowed.append(play)
-                            mur = False
+                            wall = False
             for plays in plays_tempory_allowed:
                 plays_allowed.append(plays)
             plays_tempory_allowed.clear()
     stock_of_play.clear()
+    
     if type_of_piece == "Q":
-        mur = True
+        wall = True
         stock_of_play = diagonale_right(position)
         for play in stock_of_play:
-            if mur == True :
+            if wall == True :
                 if grid[play[0]][play[1]] == "--":
                     plays_tempory_allowed.append(play)
                 else:
@@ -182,16 +232,16 @@ def mouvement(grid:list,position:list,turn:int) :
                         plays_tempory_allowed.append(play)
                     if play[1] > position[1]:
                         plays_tempory_allowed.append(play)
-                        mur = False
+                        wall = False
         
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
         plays_tempory_allowed.clear()
-        mur = True
+        wall = True
 
         stock_of_play = diagonale_left(position)
         for play in stock_of_play:
-            if mur == True :
+            if wall == True :
                 if grid[play[0]][play[1]] == "--":
                     plays_tempory_allowed.append(play)
                 else:
@@ -200,15 +250,15 @@ def mouvement(grid:list,position:list,turn:int) :
                         plays_tempory_allowed.append(play)
                     if play[1] > position[1]:
                         plays_tempory_allowed.append(play)
-                        mur = False
+                        wall = False
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
         plays_tempory_allowed.clear()
         stock_of_play.clear()
         
-        mur = True
+        wall = True
         for x_value,piece in enumerate(grid[position[0]]):
-            if mur == True :
+            if wall == True :
                     if piece == "--":
                         plays_tempory_allowed.append([position[0],x_value])
                     else:
@@ -217,17 +267,17 @@ def mouvement(grid:list,position:list,turn:int) :
                             plays_tempory_allowed.append([position[0],x_value])
                         if x_value > position[1]:
                             plays_tempory_allowed.append([position[0],x_value])
-                            mur = False 
+                            wall = False 
             
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
         plays_tempory_allowed.clear()
 
-        mur = True
+        wall = True
         for line in range(len(grid)):
             stock_of_play.append(grid[line][position[1]])
         for y_value,piece in enumerate(stock_of_play):
-            if mur == True :
+            if wall == True :
                 if piece == "--":
                     plays_tempory_allowed.append([y_value,position[1]])
                 else:
@@ -236,7 +286,7 @@ def mouvement(grid:list,position:list,turn:int) :
                         plays_tempory_allowed.append([y_value,position[1]])
                     if y_value > position[0]:
                         plays_tempory_allowed.append([y_value,position[1]])
-                        mur = False
+                        wall = False
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
     if type_of_piece == "K":
