@@ -400,7 +400,7 @@ def check_for_a_check(fake_grid,turn):
                                 return True,random_piece
     return False,random_piece
 
-def check_mate(turn,grid,position_of_the_piece_who_moove):
+def check_mate(turn,grid):
     where_king_can_go  = None
     position_to_go = []
     where_does_my_piece_can_go = []
@@ -421,6 +421,7 @@ def check_mate(turn,grid,position_of_the_piece_who_moove):
             check,random_piece = there_is_a_check(plays,grid,selected_piece,0)
             if check == False:
                 return False
+        check,position_of_the_piece_who_moove = check_for_a_check(grid,0)
         piece = grid[position_of_the_piece_who_moove[0]][position_of_the_piece_who_moove[1]]
         if where_does_my_piece_can_go != []:
             if piece[1] == "T" or piece[1] == "Q":
@@ -487,6 +488,7 @@ def check_mate(turn,grid,position_of_the_piece_who_moove):
             check,randown_piece = there_is_a_check(plays,grid,selected_piece,1)
             if check == False:
                 return False
+        check,position_of_the_piece_who_moove = check_for_a_check(grid,1)
         piece = grid[position_of_the_piece_who_moove[0]][position_of_the_piece_who_moove[1]]
         if where_does_my_piece_can_go != []:
             if piece[1] == "T" or piece[1] == "Q":
@@ -564,7 +566,68 @@ def enough_piece(list:list) :
         return False
     return True
 
+def print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos):
+    statement = False
+    global game,selected_piece,mouvement_grid
+    fake_grid = copy.deepcopy(grid)
+    piece = fake_grid[king_pos[0]][king_pos[1]]
+    fake_grid[king_next_pos[0]][king_next_pos[1]] = piece
+    fake_grid[king_pos[0]][king_pos[1]] = "--"
+    piece = fake_grid[tower_pos[0]][tower_pos[1]]
+    fake_grid[tower_next_pos[0]][tower_next_pos[1]] = piece
+    fake_grid[tower_pos[0]][tower_pos[1]] = "--"
+    check,random_piece = check_for_a_check(fake_grid,turn)
+    if check== False:
+        statement = True
+        grid = play(king_next_pos,grid,king_pos)
+        grid = play(tower_next_pos,grid,tower_pos)
+        mate = check_mate(turn,grid)
+        if mate == True:
+            game = False
+        if mate == ("pat") :
+            game = False
+            print("Il y a pat :)")
+        if tie(grid) :
+            game = False
+            print("Il y a egalité par manque de materiel :)")
+        turn = change_turn(turn)
+        selected_piece = None
+        mouvement_grid = [["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"]]
+    return statement,turn
 
+def choose_where_rock(grid,turn,position) :
+    statement = False
+    if turn == 0:
+        if position[1] == 0 :
+            king_pos = [7,4]
+            king_next_pos = [7,2]
+            tower_pos = position
+            tower_next_pos = [7,3]
+            statement,turn = print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos)
+            return statement,turn
+        if position[1] == 7 :
+            king_pos = [7,4]
+            king_next_pos = [7,6]
+            tower_pos = position
+            tower_next_pos = [7,5]
+            statement,turn = print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos)
+            return statement,turn
+    if turn == 1:
+        if position[1] == 0 :
+            king_pos = [0,4]
+            king_next_pos = [0,2]
+            tower_pos = position
+            tower_next_pos = [0,3]
+            statement,turn = print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos)
+            return statement,turn
+        if position[1] == 7 :
+            king_pos = [0,4]
+            king_next_pos = [0,6]
+            tower_pos = position
+            tower_next_pos = [0,5]
+            statement,turn = print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos)
+            return statement,turn
+    return statement,turn
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
@@ -593,8 +656,8 @@ black_left_tower_moove_counter = 0
 black_right_tower_moove_counter = 0
 white_left_tower_moove_counter = 0
 white_right_tower_moove_counter = 0
-white_king_moove_counter = 0
-black_king_moove_counter = 0
+white_king_moove_counter = 1
+black_king_moove_counter = 1
 turn = 0
 game = True
 
@@ -654,8 +717,7 @@ while True :
                         if check == False:
                             grid = play(position,grid,selected_piece)
                             
-                            mate = check_mate(turn,grid,position)
-                            
+                            mate = check_mate(turn,grid)
                             if mate == True:
                                 game = False
                             if mate == ("pat") :
@@ -670,7 +732,7 @@ while True :
                             if turn == 0 :
                                 if grid[position[0]][position[1]] == "BK" :
                                     black_king_moove_counter += 1
-                                elif grid[position[0]][position[1]] == "BK" :
+                                elif grid[position[0]][position[1]] == "BT" :
                                     if position[1] == 0:
                                         black_left_tower_moove_counter += 1
                                     if position[1] == 6 :
@@ -678,28 +740,41 @@ while True :
                             if turn == 1 :
                                 if grid[position[0]][position[1]] == "WK" :
                                     white_king_moove_counter += 1
-                                elif grid[position[0]][position[1]] == "WK" :
+                                elif grid[position[0]][position[1]] == "WT" :
                                     if position[1] == 0:
                                         white_left_tower_moove_counter += 1
                                     if position[1] == 6 :
                                         white_right_tower_moove_counter += 1
+                                        
                     elif mouvement_grid[position[0]][position[1]] == "R":
-                        #rock
-                        print('rock')
+                        check,random_piece = check_for_a_check(grid,turn)
+                        if check == False:
+                            rock_statement,turn = choose_where_rock(grid,turn,position)
+                            if rock_statement :
+                                if turn == 0 :
+                                    black_king_moove_counter += 1
+                                if turn == 1 :
+                                    white_king_moove_counter += 1
                     else :
                         selected_piece,mouvement_grid = show_possibilty(grid,position,turn)
-                        if grid[selected_piece[0]][selected_piece[1]] == "WK":
-                            if white_king_moove_counter == 0 :
-                                if white_right_tower_moove_counter == 0 :
-                                    mouvement_grid[7][0] = "R"
-                                if white_left_tower_moove_counter == 0 :
-                                    mouvement_grid[7][7] = "R"
-                        if grid[selected_piece[0]][selected_piece[1]] == "BK":
-                            if black_king_moove_counter == 0 :
-                                if black_right_tower_moove_counter == 0 :
-                                    mouvement_grid[0][0] = "R"
-                                if black_left_tower_moove_counter == 0 :
-                                    mouvement_grid[0][7] = "R"
+                        if turn == 0 :
+                            if grid[selected_piece[0]][selected_piece[1]] == "WK":
+                                if white_king_moove_counter == 0 :
+                                    if white_right_tower_moove_counter == 0 :
+                                        if grid[7][1] == "--" and grid[7][2] == "--" and grid[7][3] == "--":
+                                            mouvement_grid[7][0] = "R"
+                                    if white_left_tower_moove_counter == 0 :
+                                        if grid[7][5] == "--" and grid[7][6] == "--":
+                                            mouvement_grid[7][7] = "R"
+                        else :
+                            if grid[selected_piece[0]][selected_piece[1]] == "BK":
+                                if black_king_moove_counter == 0 :
+                                    if black_right_tower_moove_counter == 0 :
+                                        if grid[0][1] == "--" and grid[0][2] == "--" and grid[0][3] == "--":
+                                            mouvement_grid[0][0] = "R"
+                                    if black_left_tower_moove_counter == 0 :
+                                        if grid[0][5] == "--" and grid[0][6] == "--":
+                                            mouvement_grid[0][7] = "R"
                             
     else :
         for event in pygame.event.get():
@@ -715,7 +790,16 @@ while True :
                     black_king_moove_counter = 0
                     turn = 0
                     game = True
-                    grid = [["BT","BN","BB","BQ","BK","BB","BN","BT"],["BP","BP","BP","BP","BP","BP","BP","BP"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["WP","WP","WP","WP","WP","WP","WP","WP"],["WT","WN","WB","WQ","WK","WB","WN","WT"]]
+                    grid = [
+                        ["BT","BN","BB","BQ","BK","BB","BN","BT"],
+                        ["BP","BP","BP","BP","BP","BP","BP","BP"],
+                        ["--","--","--","--","--","--","--","--"],
+                        ["--","--","--","--","--","--","--","--"],
+                        ["--","--","--","--","--","--","--","--"],
+                        ["--","--","--","--","--","--","--","--"],
+                        ["WP","WP","WP","WP","WP","WP","WP","WP"],
+                        ["WT","WN","WB","WQ","WK","WB","WN","WT"]
+                        ]
         print_board()
         print_piece(grid)
         
