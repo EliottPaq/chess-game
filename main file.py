@@ -4,7 +4,7 @@ import copy
 
 
 def print_board () :
-    """t
+    """
     his function just print the grid (white and black square)
     """    
     
@@ -220,6 +220,7 @@ def mouvement(grid:list,position:list,turn:int) :
     stock_of_play.clear()
     
     if type_of_piece == "Q":
+        #since the queen is a combination of a rook and a bishop we are using the same technique
         wall = True
         stock_of_play = diagonale_right(position)
         for play in stock_of_play:
@@ -290,23 +291,25 @@ def mouvement(grid:list,position:list,turn:int) :
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
     if type_of_piece == "K":
-            plays_allowed.append([position[0]+1,position[1]+1])
-            plays_allowed.append([position[0],position[1]+1])
-            plays_allowed.append([position[0]+1,position[1]])
-            plays_allowed.append([position[0],position[1]-1])
-            plays_allowed.append([position[0]-1,position[1]])
-            plays_allowed.append([position[0]-1,position[1]+1])
-            plays_allowed.append([position[0]+1,position[1]-1])
-            plays_allowed.append([position[0]-1,position[1]-1])
+        #the king can go eveywhere around him but one square long
+        plays_allowed.append([position[0]+1,position[1]+1])
+        plays_allowed.append([position[0],position[1]+1])
+        plays_allowed.append([position[0]+1,position[1]])
+        plays_allowed.append([position[0],position[1]-1])
+        plays_allowed.append([position[0]-1,position[1]])
+        plays_allowed.append([position[0]-1,position[1]+1])
+        plays_allowed.append([position[0]+1,position[1]-1])
+        plays_allowed.append([position[0]-1,position[1]-1])
     if type_of_piece == "N":
-            plays_allowed.append([position[0]+2,position[1]+1])
-            plays_allowed.append([position[0]+2,position[1]-1])
-            plays_allowed.append([position[0]-2,position[1]+1])
-            plays_allowed.append([position[0]-2,position[1]-1])
-            plays_allowed.append([position[0]+1,position[1]+2])
-            plays_allowed.append([position[0]+1,position[1]-2])
-            plays_allowed.append([position[0]-1,position[1]-2])
-            plays_allowed.append([position[0]-1,position[1]+2])
+        #knight can go in "L"
+        plays_allowed.append([position[0]+2,position[1]+1])
+        plays_allowed.append([position[0]+2,position[1]-1])
+        plays_allowed.append([position[0]-2,position[1]+1])
+        plays_allowed.append([position[0]-2,position[1]-1])
+        plays_allowed.append([position[0]+1,position[1]+2])
+        plays_allowed.append([position[0]+1,position[1]-2])
+        plays_allowed.append([position[0]-1,position[1]-2])
+        plays_allowed.append([position[0]-1,position[1]+2])
     if type_of_piece == "P":
             if turn == 0:
                 if grid[position[0]-1][position[1]] == "--" :
@@ -376,15 +379,52 @@ def change_turn(turn:int):
     else :
         return 1
 
+def show_possibilty(grid:list,position:list,turn):
+    """
+    we are taking our grid,our position , and the turn to know where the piece which we click on can go 
+
+    Args:
+        grid (list): the grid of the game
+        position (list): the position of the mouse
+        turn (_type_): who's turn (white or black)
+
+    Returns:
+            list : a list who contain a grid of all the place the piece can go (Y are for "the piece can go there)
+    """        
+    
+    mouvement_grid = [
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],
+    ["--","--","--","--","--","--","--","--"],   
+    ]
+    #this "mouvement_grid" will be modifying she will contain all the place the piece can go
+    plays,selected_piece = mouvement(grid,position,turn) #we need mouvement function which will give us all the position of the piece can go
+    for play in plays :
+        mouvement_grid[play[0]][play[1]] = "Y" #transforming empty slot into "Y"
+    return selected_piece,mouvement_grid
+
 def display_possibilty (mouvement_grid:list) :
+    """
+    this grid show the mouvement possible if you click on a piece
+
+    Args:
+        mouvement_grid (list): _description_
+    """    
     axis_value = [0,75,150,225,300,375,450,525]
     color_value = 0 
     for y,line in enumerate(mouvement_grid) :
         for x,column in enumerate(line) :
             if  column == "Y":
                 pygame.draw.rect(screen,"yellow",[axis_value[x],axis_value[y],75,75])
-            if column =="R" :
+            if column == "R" :
                 pygame.draw.rect(screen,"Red",[axis_value[x],axis_value[y],75,75])
+            if column == "E" :
+                pygame.draw.rect(screen,"yellow",[axis_value[x],axis_value[y],75,75])
 
 def diagonale_right (position:list):
     plays = []
@@ -678,6 +718,42 @@ def choose_where_rock(grid,turn,position) :
             statement,turn = print_the_rock(grid,turn,king_pos,king_next_pos,tower_pos,tower_next_pos)
             return statement,turn
     return statement,turn
+
+def try_en_passant(position,grid,selected_piece,turn,pos_of_en_passant):
+    fake_grid = copy.deepcopy(grid)
+    piece = grid[selected_piece[0]][selected_piece[1]]
+    fake_grid[position[0]][position[1]] = piece
+    fake_grid[selected_piece[0]][selected_piece[1]] = "--"
+    fake_grid[pos_of_en_passant[0]][pos_of_en_passant[1]] = "--"
+    check,random_piece = check_for_a_check(fake_grid,turn)
+    return check
+
+def apply_en_passant(grid,position,pos_of_en_passant,selected_piece) :
+    global en_passant,game,turn,mouvement_grid
+    piece = grid[selected_piece[0]][selected_piece[1]]
+    grid[position[0]][position[1]] = piece
+    grid[selected_piece[0]][selected_piece[1]] = "--"
+    grid[pos_of_en_passant[0]][pos_of_en_passant[1]] = "--"
+    en_passant = False
+    mate = check_mate(turn,grid)
+    if mate == True:
+        game = False
+    if mate == ("pat") :
+        game = False
+        print("Il y a pat :)")
+    if tie(grid) :
+        game = False
+        print("Il y a egalité par manque de materiel :)")
+    turn = change_turn(turn)
+    selected_piece = None
+    mouvement_grid = [["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"],["--","--","--","--","--","--","--","--"]]
+    return grid
+def en_passant_mouvement(mouvement_grid,position,pos_of_en_passant,turn):
+    if turn == 0 :
+        mouvement_grid[position[0]-1][pos_of_en_passant[1]] = "E"
+    else :
+        mouvement_grid[position[0]+1][pos_of_en_passant[1]] = "E"
+    return mouvement_grid
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
@@ -710,7 +786,8 @@ white_king_moove_counter = 1
 black_king_moove_counter = 1
 turn = 0
 game = True
-
+en_passant = False
+pos_of_en_passant = [0,0]
 #importing and scale all the piece
 #white 
 white_king_sprite = pygame.image.load("piece\\roi_blanc.png").convert_alpha()
@@ -752,6 +829,7 @@ black_pawn_sprite = pygame.transform.scale(black_pawn_sprite,(60,60))
 
 
 while True :
+    en_passant =  True
     if game :
         print_board()
         display_possibilty(mouvement_grid)
@@ -766,7 +844,16 @@ while True :
                         check,position_of_a_piece = there_is_a_check(position,grid,selected_piece,turn)
                         if check == False:
                             grid = play(position,grid,selected_piece)
-                            
+                            if grid[position[0]][position[1]][1]  == "P":
+                                difference = position[0]-selected_piece[0]
+                                if difference == 2 or difference == -2 :
+                                    print("en passant")
+                                    en_passant,pos_of_en_passant = True,position
+                                else :
+                                    en_passant = False
+                            else :
+                                en_passant = False
+
                             mate = check_mate(turn,grid)
                             if mate == True:
                                 game = False
@@ -805,8 +892,19 @@ while True :
                                     black_king_moove_counter += 1
                                 if turn == 1 :
                                     white_king_moove_counter += 1
+                    elif mouvement_grid[position[0]][position[1]] == "E":
+                        check = try_en_passant(position,grid,selected_piece,turn,pos_of_en_passant)
+                        if check == False :
+                            grid = apply_en_passant(grid,position,pos_of_en_passant,selected_piece)
                     else :
                         selected_piece,mouvement_grid = show_possibilty(grid,position,turn)
+                        if grid[selected_piece[0]][selected_piece[1]][1] == "P" :
+                            if en_passant:
+                                difference_x = pos_of_en_passant[1]-selected_piece[1]
+                                if difference_x == 1 or difference_x == -1:
+                                    if selected_piece[0] == pos_of_en_passant[0] :
+                                        print('je peut te baiser')
+                                        mouvement_grid = en_passant_mouvement(mouvement_grid,position,pos_of_en_passant,turn)
                         if turn == 0 :
                             if grid[selected_piece[0]][selected_piece[1]] == "WK":
                                 if white_king_moove_counter == 0 :
@@ -825,7 +923,7 @@ while True :
                                     if black_left_tower_moove_counter == 0 :
                                         if grid[0][5] == "--" and grid[0][6] == "--":
                                             mouvement_grid[0][7] = "R"
-                            
+    
     else :
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
