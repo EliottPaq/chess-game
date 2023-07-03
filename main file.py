@@ -1,8 +1,6 @@
 import pygame
 from sys import exit
 import copy
-
-
 def print_board () :
     """
     his function just print the grid (white and black square)
@@ -143,14 +141,14 @@ def mouvement(grid:list,position:list,turn:int) :
     stock_of_play = []
     final_play = []
     
-    if type_of_piece == "T": #if the piece is a rook/tower
+    if type_of_piece == "T" or type_of_piece == "Q": #if the piece is a rook/tower or a queen
         wall = True 
         for x_value,piece in enumerate(grid[position[0]]): #we are analysing the line where the tower is
             if wall == True :
                     if piece == "--":
                         plays_tempory_allowed.append([position[0],x_value]) #if it's an empty slot we add into the list
                     else: #if it's not an empty slot
-                        if x_value < position[1]: #if it's the a wall before (in term of list reading) the rook/tower
+                        if x_value < position[1]: #if the  wall is before (in term of list reading) the rook/tower
                             plays_tempory_allowed.clear() # we are deleting all the value because the wall stop the rook/tower
                             plays_tempory_allowed.append([position[0],x_value]) # we add the piece who block us
                         if x_value > position[1]: # if the wall is after the rook/tower
@@ -179,8 +177,10 @@ def mouvement(grid:list,position:list,turn:int) :
                         wall = False
         for plays in plays_tempory_allowed:
             plays_allowed.append(plays)
-            
-    if type_of_piece == "B": # if the piece is a bishop
+        plays_tempory_allowed.clear()
+        wall = True
+        stock_of_play.clear()
+    if type_of_piece == "B" or type_of_piece == "Q": # if the piece is a bishop or a queen
         
             wall = True
             stock_of_play = diagonale_right(position) # we are calling a function who give us a list of the diagonale who go like this →↓ 
@@ -220,77 +220,6 @@ def mouvement(grid:list,position:list,turn:int) :
             plays_tempory_allowed.clear()
     stock_of_play.clear()
     
-    if type_of_piece == "Q":
-        #since the queen is a combination of a rook and a bishop we are using the same technique
-        wall = True
-        stock_of_play = diagonale_right(position)
-        for play in stock_of_play:
-            if wall == True :
-                if grid[play[0]][play[1]] == "--":
-                    plays_tempory_allowed.append(play)
-                else:
-                    if play[1] < position[1]:
-                        plays_tempory_allowed.clear()
-                        plays_tempory_allowed.append(play)
-                    if play[1] > position[1]:
-                        plays_tempory_allowed.append(play)
-                        wall = False
-        
-        for plays in plays_tempory_allowed:
-            plays_allowed.append(plays)
-        plays_tempory_allowed.clear()
-        wall = True
-
-        stock_of_play = diagonale_left(position)
-        for play in stock_of_play:
-            if wall == True :
-                if grid[play[0]][play[1]] == "--":
-                    plays_tempory_allowed.append(play)
-                else:
-                    if play[1] < position[1]:
-                        plays_tempory_allowed.clear()
-                        plays_tempory_allowed.append(play)
-                    if play[1] > position[1]:
-                        plays_tempory_allowed.append(play)
-                        wall = False
-        for plays in plays_tempory_allowed:
-            plays_allowed.append(plays)
-        plays_tempory_allowed.clear()
-        stock_of_play.clear()
-        
-        wall = True
-        for x_value,piece in enumerate(grid[position[0]]):
-            if wall == True :
-                    if piece == "--":
-                        plays_tempory_allowed.append([position[0],x_value])
-                    else:
-                        if x_value < position[1]:
-                            plays_tempory_allowed.clear()
-                            plays_tempory_allowed.append([position[0],x_value])
-                        if x_value > position[1]:
-                            plays_tempory_allowed.append([position[0],x_value])
-                            wall = False 
-            
-        for plays in plays_tempory_allowed:
-            plays_allowed.append(plays)
-        plays_tempory_allowed.clear()
-
-        wall = True
-        for line in range(len(grid)):
-            stock_of_play.append(grid[line][position[1]])
-        for y_value,piece in enumerate(stock_of_play):
-            if wall == True :
-                if piece == "--":
-                    plays_tempory_allowed.append([y_value,position[1]])
-                else:
-                    if y_value < position[0]:
-                        plays_tempory_allowed.clear()
-                        plays_tempory_allowed.append([y_value,position[1]])
-                    if y_value > position[0]:
-                        plays_tempory_allowed.append([y_value,position[1]])
-                        wall = False
-        for plays in plays_tempory_allowed:
-            plays_allowed.append(plays)
     if type_of_piece == "K":
         #the king can go eveywhere around him but one square long
         plays_allowed.append([position[0]+1,position[1]+1])
@@ -365,7 +294,7 @@ def can_moove (position:list,old_mouvement_grid):
 
 def play(position, grid_of_the_game, selected_piece):
     """
-    we moving the piece on the board
+    we moove the piece on the board
 
     Args:
         position (list): position of the mouse
@@ -383,13 +312,13 @@ def play(position, grid_of_the_game, selected_piece):
     #if the pawn is on the last line we can transform him in different piece
     if grid_of_the_game[position[0]][position[1]][1] == "P":
         if grid_of_the_game[position[0]][position[1]][0] == "W":
-            if position[0] == 0:
+            if position[0] == 0: #if the piece is at the end of board we ask the player to know in what type of piece he want to transform the piece
                 while which_piece !="Q" and which_piece !="T" and which_piece !="B" and which_piece != "N" : 
                     which_piece = str(input("en qu'elle piece veut tu transformer ton pion ? : \nEntre Q pour une dame\nEntre T pour une tour\nEntre N pour un cavalier\nEntre B pour un fou\n alors tu choisis quoi ? : "))
                 piece = "W"+which_piece
                 grid_of_the_game[position[0]][position[1]] = str(piece)
         else:
-            if position[0] == 7:
+            if position[0] == 7:#if the piece is at the end of board we ask the player to know in what type of piece he want to transform the piece
                 while which_piece !="Q" and which_piece !="T" and which_piece !="B" and which_piece != "N" : 
                     which_piece = str(input("en qu'elle piece veut tu transformer ton pion ? : \nEntre Q pour une dame\nEntre T pour une tour\nEntre N pour un cavalier\nEntre B pour un fou\n alors tu choisis quoi ? : "))
                 piece = "B"+which_piece
@@ -422,7 +351,7 @@ def show_possibilty(grid:list,position:list,turn):
 
     Returns:
             list : a list who contain a grid of all the place the piece can go (Y are for "the piece can go there)
-    """        
+    """
     
     mouvement_grid = [
     ["--","--","--","--","--","--","--","--"],
