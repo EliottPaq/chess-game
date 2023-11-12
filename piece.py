@@ -1,7 +1,10 @@
+import pygame
+
 class piece () :
-    def __init__(self,color:str,position:list()):
+    def __init__(self,color:str,position:list(),sprite_pathing :str):
         self.color = color
-        self.position = position #as position [1] = x ; position[2] = y
+        self.position = position #as position [0] = x ; position[1] = y
+        self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
     def reset_movement_grid (self) :
         self.mouvement_grid = [  # set the grid to the correct start position
             [None,None,None,None,None,None,None,None], 
@@ -18,8 +21,8 @@ class piece () :
 
 class Pawn (piece):
     
-    def __init__(self, color:str,position:list):
-        super.__init__(color,position)
+    def __init__(self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
     def __eq__(self) :
         return self.color
     def move(self,grid:list,turn:str,list_of_play:list) -> list :
@@ -84,8 +87,8 @@ class Pawn (piece):
 
 
 class Roock (piece):
-    def __init__(self, color:str):
-        super.__init__(color)
+    def __init__(self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
         self.move_counter = 0 
 
     def move(self,grid:list,turn:str,list_of_play:list) -> list :
@@ -136,11 +139,12 @@ class Roock (piece):
                             if grid[7][4].move_counter == 0 :
                                 if grid[7][5] == None and grid[7][6] == None:
                                     self.mouvement_grid[7][4] == True
-                for pos in self.mouvement_grid:
-                    if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
-                        grid[pos[0]][pos[1]] == True
+                for list in self.tempory_move:
+                    for pos in list :
+                        if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
+                            grid[pos[0]][pos[1]] == True
                         
-            if self.color == "B": #if the piece is Black we check for castle
+            elif self.color == "B": #if the piece is Black we check for castle
                 if self.position == [0,0] :
                     if self.move_counter == 0 :
                         if grid[0][4] == object(King) :
@@ -153,16 +157,16 @@ class Roock (piece):
                             if grid[0][4].move_counter == 0 :
                                 if grid[0][5] == None and grid[0][6] == None:
                                     self.mouvement_grid[0][4] == True
-                for pos in self.mouvement_grid:
-                    if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
-                        grid[pos[0]][pos[1]] == True
+                for list in self.tempory_move:
+                    for pos in list :
+                        if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
+                            grid[pos[0]][pos[1]] == True
                 
 
 class King (piece):
-    def __init__(self, color:str):
-        super.__init__(color)
+    def __init__(self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
         self.move_counter = 0 
-        self.tempory_move = []
     def move(self,grid:list,turn:str) :
         """the king can move only one square around him
 
@@ -171,6 +175,7 @@ class King (piece):
             turn (str): who's turn
         """
         if self.color == turn:
+            self.tempory_move = []
             self.tempory_move.append(self.position[0]-1,self.position[1]) #we add all the possible direction 
             self.tempory_move.append(self.position[0]-1,self.position[1]-1)
             self.tempory_move.append(self.position[0]-1,self.position[1]+1)
@@ -194,27 +199,112 @@ class King (piece):
         self.tempory_move.clear()
         
 class Queen (Roock):
-    def __init__(self, color:str):
-        super.__init__(color)
+    def __init__(self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
     
     def move(self,grid:list,turn:str):
         """
-        the queen is the combination of all the moove off the rock and the Bishop
+        the queen is the combination of all the move off the rock and the Bishop
         Args:
             grid (list): the grid
             turn (str): who's turn
         """
-        
-    
+        if self.color == turn:
+            self.tempory_move = [[[],[]],[[],[]]] #stock all the move before checking the color of the piece ,the first list stock the diagonale moove and the second the horizontal and vertical move
+            for y_axis in range(grid):
+                for x_axis in range(grid[y_axis]) :
+                    if (x_axis-y_axis) == (self.position[0]-self.position[1]):
+                        if self.position[0]<x_axis:
+                            if grid[y_axis][x_axis] != None : #if it's not an empty square i clear the list
+                                self.tempory_move[0][0].clear()
+                            self.tempory_move[0][0].append([x_axis,y_axis])
+                        elif x_axis>self.position[0]:
+                            self.tempory_move[0][0].append(x_axis,y_axis)
+                            if grid[y_axis][x_axis] != None :
+                                break
+            for y_axis in range(grid):
+                for x_axis in range(grid[y_axis]) :
+                    if (x_axis+y_axis) == (self.position[0]+self.position[1]):
+                        if self.position[1]>x_axis:
+                            if grid[y_axis][x_axis] != None : #if it's not an empty square i clear the list
+                                self.tempory_move[0][1].clear()
+                            self.tempory_move[0][1].append([x_axis,y_axis])
+                        elif x_axis<self.position[1]:
+                            self.tempory_move[0][1].append(x_axis,y_axis)
+                            if grid[y_axis][x_axis] != None :
+                                break
+                            
+                            
+            for pos,element in enumerate(grid[self.postion[1]]):
+                if pos<self.position[0]:
+                    if element != None : #if it's not an empty square i clear the list
+                        self.tempory_move[1][0].clear()
+                    self.tempory_move[1][0].append([pos,self.position[1]])
+                elif pos>self.position[0]:
+                    self.tempory_move[1][0].append(pos,self.position[1])
+                    if element != None :
+                        break
+            for pos in range(grid):
+                if pos<self.position[1]:
+                    if grid[pos][self.position[0]] != None : #if it's not an empty square i clear the list
+                        self.tempory_move[1][1].clear()
+                    self.tempory_move[1][1].append([self.position[0],pos])
+                elif pos>self.position[1]:
+                    self.tempory_move[1][1].append(self.position[0],pos)
+                    if element != None :
+                        break
+                    
+                    
+                    
+            if self.color == "W" :
+                for big_list in self.tempory_move:
+                    for list in big_list:
+                        for pos in list :
+                            if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
+                                grid[pos[0]][pos[1]] == True
+            else:
+                for list in self.tempory_move:
+                    for list in big_list:
+                        for pos in list :
+                            if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
+                                grid[pos[0]][pos[1]] == True
+
 
 class Knight (piece):
-    def __init__(self, color:str):
-        super.__init__(color)
-        
+    def __init__(self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
+    
+    def move(self,grid:list,turn:str):
+        """
+            the knight move in a "L" direction
+        Args:
+            grid (list): the actual grid 
+            turn (str): who's turn
+        """        
+        if self.color == turn:
+            self.tempory_move = []
+            self.tempory_move.append(self.position[0]+2,self.position[1]+1)
+            self.tempory_move.append(self.position[0]+2,self.position[1]-1)
+            self.tempory_move.append(self.position[0]+1,self.position[1]+2)
+            self.tempory_move.append(self.position[0]+1,self.position[1]-2)
+            self.tempory_move.append(self.position[0]-2,self.position[1]+1)
+            self.tempory_move.append(self.position[0]-2,self.position[1]+2)
+            self.tempory_move.append(self.position[0]-1,self.position[1]+2)
+            self.tempory_move.append(self.position[0]-1,self.position[1]-2)
+            
+            
+            if self.color == "W" :
+                for pos in self.tempory_move:
+                    if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
+                        grid[pos[0]][pos[1]] == True
+            else:
+                for pos in self.tempory_move:
+                    if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
+                        grid[pos[0]][pos[1]] == True
 
 class Bishop (piece) :
-    def __init__ (self, color:str):
-        super.__init__(color)
+    def __init__ (self, color:str,position:list,sprite_pathing : str):
+        super.__init__(color,position,sprite_pathing)
     def move(self,grid:list,turn:str):
         """
         the bishop only moove in diagonale
@@ -223,24 +313,37 @@ class Bishop (piece) :
             turn (str): who's turn
         """
         if self.color == turn:
-            self.tempory_move = [[],[]] #stock all the move before checking the color of the piece , the first list is for all the x axis move the second is for the y axis move
+            self.tempory_move = [[],[]] #stock all the move before checking the color of the piece , the first list is for all the diagonal →↓ move the second is for the diagonal →↑ move
             for y_axis in range(grid):
                 for x_axis in range(grid[y_axis]) :
-                    
-                if pos<self.position[0]:
-                    if element != None : #if it's not an empty square i clear the list
-                        self.tempory_move[0].clear()
-                    self.tempory_move[0].append([pos,self.position[1]])
-                elif pos>self.position[0]:
-                    self.tempory_move[0].append(pos,self.position[1])
-                    if element != None :
-                        break
-            for pos in range(grid):
-                if pos<self.position[1]:
-                    if grid[pos][self.position[0]] != None : #if it's not an empty square i clear the list
-                        self.tempory_move[1].clear()
-                    self.tempory_move[1].append([self.position[0],pos])
-                elif pos>self.position[1]:
-                    self.tempory_move[1].append(self.position[0],pos)
-                    if element != None :
-                        break
+                    if (x_axis-y_axis) == (self.position[0]-self.position[1]): # if this is true it does mean the piece is on the same diagonale 
+                        if self.position[0]<x_axis:
+                            if grid[y_axis][x_axis] != None : #if it's not an empty square i clear the list
+                                self.tempory_move[0].clear()
+                            self.tempory_move[0].append([x_axis,y_axis])
+                        elif x_axis>self.position[0]:
+                            self.tempory_move[0].append(x_axis,y_axis)
+                            if grid[y_axis][x_axis] != None :
+                                break
+            for y_axis in range(grid):
+                for x_axis in range(grid[y_axis]) :
+                    if (x_axis+y_axis) == (self.position[0]+self.position[1]):
+                        if self.position[1]>x_axis:
+                            if grid[y_axis][x_axis] != None : #if it's not an empty square i clear the list
+                                self.tempory_move[1].clear()
+                            self.tempory_move[1].append([x_axis,y_axis])
+                        elif x_axis<self.position[1]:
+                            self.tempory_move[1].append(x_axis,y_axis)
+                            if grid[y_axis][x_axis] != None :
+                                break
+            if self.color == "W" :
+                for list in self.tempory_move:
+                    for pos in list :
+                        if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
+                            grid[pos[0]][pos[1]] == True
+            else:
+                for list in self.tempory_move:
+                    for pos in list :
+                        if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
+                            grid[pos[0]][pos[1]] == True
+            
