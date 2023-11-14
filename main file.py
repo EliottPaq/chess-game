@@ -3,7 +3,7 @@ from sys import exit
 import copy
 def print_board () :
     """
-    his function just print the grid (white and black square)
+    this function just print the grid (white and black square)
     """    
     
     axis_value = [0,75,150,225,300,375,450,525] #those value are the limit of each square in x and y axis
@@ -89,8 +89,7 @@ def where_am_i (mouse_pos:list):
     while mouse_y >= 0 : 
         y += 1
         mouse_y -= 75
-    pos = [y,x]
-    return pos
+    return [y,x]
 
     def show_possibilty(grid:list,position:list,turn):
         """
