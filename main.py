@@ -53,7 +53,7 @@ def print_piece (grid:list) :
     for row in grid:
         for piece in row :
             if piece != None:
-                piece_surf = piece.sprite.get_rect(center = (axis_value[piece.position[0]]+37.5,axis_value[piece.position[1]]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
+                piece_surf = piece.sprite.get_rect(center = (axis_value[piece.position[1]]+37.5,axis_value[piece.position[0]]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                 screen.blit(piece.sprite,piece_surf)
 
 def display_possibility (movement_grid:list) :
@@ -64,9 +64,8 @@ def display_possibility (movement_grid:list) :
         movement_grid (list): _description_
     """    
     axis_value = [0,75,150,225,300,375,450,525]
-    color_value = 0 
-    for x,line in enumerate(movement_grid) :
-        for y,state in enumerate(line) :
+    for y,line in enumerate(movement_grid) :
+        for x,state in enumerate(line) :
             if  state == True:
                 pygame.draw.rect(screen,"yellow",[axis_value[x],axis_value[y],75,75])
 
@@ -74,37 +73,68 @@ def change_turn(turn:str) -> str :
     if turn == "W" :
         return "B"
     return "W"
+
+def screen_update(board:list,movement_grid:list):
+    print_board()
+    if len(movement_grid) == 7 :
+        display_possibility(movement_grid)
+    print_piece(board)
+    pygame.display.flip() # we actualize the screen with all the modification
+
+def move_piece(piece:object,board:list,position:list,list_of_play:list,turn:str) :
+    """
+        move the piece 
+    Args:
+        piece (object): the peice we are mooving
+        board (list): the board
+        position (list): the position we are mooving the piece to
+
+    """
+    
+
+    board[position[0]][position[1]] = piece
+    board[piece.position[0]][piece.position[1]] = None
+    board[position[0]][position[1]].position = position
+
+
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
 
 board = [  # set the grid to the correct start position
-        [Rook("B",[0,0],"piece\\tour_noir.png"),Knight("B",[1,0],"piece\\cavalier_noir.png"),Bishop("B",[2,0],"piece\\fou_noir.png"),Queen("B",[3,0],"piece\\dame_noir.png"),King("B",[4,0],"piece\\roi_noir.png"),Bishop("B",[5,0],"piece\\fou_noir.png"),Knight("B",[6,0],"piece\\cavalier_noir.png"),Rook("B",[7,0],"piece\\tour_noir.png")],
-        [Pawn("B",[0,1],"piece\\pion_noir.png"),Pawn("B",[1,1],"piece\\pion_noir.png"),Pawn("B",[2,1],"piece\\pion_noir.png"),Pawn("B",[3,1],"piece\\pion_noir.png"),Pawn("B",[4,1],"piece\\pion_noir.png"),Pawn("B",[5,1],"piece\\pion_noir.png"),Pawn("B",[6,1],"piece\\pion_noir.png"),Pawn("B",[7,1],"piece\\pion_noir.png")],
+        [Rook("B",[0,0],"piece\\tour_noir.png"),Knight("B",[0,1],"piece\\cavalier_noir.png"),Bishop("B",[0,2],"piece\\fou_noir.png"),Queen("B",[0,3],"piece\\dame_noir.png"),King("B",[0,4],"piece\\roi_noir.png"),Bishop("B",[0,5],"piece\\fou_noir.png"),Knight("B",[0,6],"piece\\cavalier_noir.png"),Rook("B",[0,7],"piece\\tour_noir.png")],
+        [Pawn("B",[1,0],"piece\\pion_noir.png"),Pawn("B",[1,1],"piece\\pion_noir.png"),Pawn("B",[1,2],"piece\\pion_noir.png"),Pawn("B",[1,3],"piece\\pion_noir.png"),Pawn("B",[1,4],"piece\\pion_noir.png"),Pawn("B",[1,5],"piece\\pion_noir.png"),Pawn("B",[1,6],"piece\\pion_noir.png"),Pawn("B",[1,7],"piece\\pion_noir.png")],
         [None,None,None,None,None,None,None,None], 
         [None,None,None,None,None,None,None,None],
         [None,None,None,None,None,None,None,None],
         [None,None,None,None,None,None,None,None],
-        [Pawn("W",[0,6],"piece\\pion_blanc.png"),Pawn("W",[1,6],"piece\\pion_blanc.png"),Pawn("W",[2,6],"piece\\pion_blanc.png"),Pawn("W",[3,6],"piece\\pion_blanc.png"),Pawn("W",[4,6],"piece\\pion_blanc.png"),Pawn("W",[5,6],"piece\\pion_blanc.png"),Pawn("W",[6,6],"piece\\pion_blanc.png"),Pawn("W",[7,6],"piece\\pion_blanc.png")],
-        [Rook("W",[0,7],"piece\\tour_blanc.png"),Knight("W",[1,7],"piece\\cavalier_blanc.png"),Bishop("W",[2,7],"piece\\fou_blanc.png"),Queen("W",[3,7],"piece\\dame_blanc.png"),King("W",[4,7],"piece\\roi_blanc.png"),Bishop("W",[5,7],"piece\\fou_blanc.png"),Knight("W",[6,7],"piece\\cavalier_blanc.png"),Rook("W",[7,7],"piece\\tour_blanc.png")]
+        [Pawn("W",[6,0],"piece\\pion_blanc.png"),Pawn("W",[6,1],"piece\\pion_blanc.png"),Pawn("W",[6,2],"piece\\pion_blanc.png"),Pawn("W",[6,3],"piece\\pion_blanc.png"),Pawn("W",[6,4],"piece\\pion_blanc.png"),Pawn("W",[6,5],"piece\\pion_blanc.png"),Pawn("W",[6,6],"piece\\pion_blanc.png"),Pawn("W",[6,7],"piece\\pion_blanc.png")],
+        [Rook("W",[7,0],"piece\\tour_blanc.png"),Knight("W",[7,1],"piece\\cavalier_blanc.png"),Bishop("W",[7,2],"piece\\fou_blanc.png"),Queen("W",[7,3],"piece\\dame_blanc.png"),King("W",[7,4],"piece\\roi_blanc.png"),Bishop("W",[7,5],"piece\\fou_blanc.png"),Knight("W",[7,6],"piece\\cavalier_blanc.png"),Rook("W",[7,7],"piece\\tour_blanc.png")]
         ]
-list_of_play = []
 turn = "W"
-
+piece_is_selected = False
+print_board()
+print_piece(board)
+pygame.display.flip() # we actualize the screen with all the modification
 while True : 
-    print_board()
-    print_piece(board)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # if the user quit the game end it
             pygame.quit()
             exit()
         if event.type == pygame.MOUSEBUTTONDOWN : 
-            position = where_am_i(pygame.mouse.get_pos()) # we know where on the grid the player click
+            position = where_am_i(pygame.mouse.get_pos())  # we know where on the grid the player click
             piece = board[position[0]][position[1]]
-            if piece != None:
-                piece.move(board,turn,list_of_play)
-                print(piece.movement_grid)
-            display_possibility(piece.movement_grid)
-            #change_turn(turn)
-            
-    pygame.display.flip() # we actualize the screen with all the modification
+            if piece != None :
+                if piece.color == turn :
+                    piece.move(board,turn)
+                    screen_update(board,piece.movement_grid)
+                    piece_selected = piece
+            else :
+                if piece_selected.movement_grid[position[0]][position[1]] == True:
+
+                    move_piece(piece_selected,board,position)
+                    
+                    screen_update(board,[])
+                    #turn = change_turn(turn)
+
