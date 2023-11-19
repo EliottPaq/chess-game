@@ -76,26 +76,34 @@ def change_turn(turn:str) -> str :
 
 def screen_update(board:list,movement_grid:list):
     print_board()
-    if len(movement_grid) == 7 :
+    if len(movement_grid) == 8 :
         display_possibility(movement_grid)
     print_piece(board)
     pygame.display.flip() # we actualize the screen with all the modification
 
-def move_piece(piece:object,board:list,position:list,list_of_play:list,turn:str) :
+def move_piece(piece:object,board:list,position:list,list_of_move:list) :
     """
         move the piece 
     Args:
         piece (object): the peice we are mooving
-        board (list): the board
+        board (list): the board 
         position (list): the position we are mooving the piece to
 
     """
     
+    if board[position[0]][position[1]] != None and board[position[0]][position[1]].color == piece.color :
+            board[piece.position[0]][piece.position[1]] = board[position[0]][position[1]]
+            board[position[0]][position[1]] = piece
+            board[position[0]][position[1]].position = position
+    else :
+        board[position[0]][position[1]] = piece
+        board[piece.position[0]][piece.position[1]] = None
+        board[position[0]][position[1]].position = position
+        
+    board[position[0]][position[1]].reset_movement_grid()
+    board[position[0]][position[1]].move_counter += 1
 
-    board[position[0]][position[1]] = piece
-    board[piece.position[0]][piece.position[1]] = None
-    board[position[0]][position[1]].position = position
-
+    list_of_move.append([piece.name,position])
 
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
@@ -116,6 +124,7 @@ piece_is_selected = False
 print_board()
 print_piece(board)
 pygame.display.flip() # we actualize the screen with all the modification
+list_of_move = []
 while True : 
 
     for event in pygame.event.get():
@@ -127,14 +136,12 @@ while True :
             piece = board[position[0]][position[1]]
             if piece != None :
                 if piece.color == turn :
-                    piece.move(board,turn)
+                    piece.move(board,turn,list_of_move)
                     screen_update(board,piece.movement_grid)
                     piece_selected = piece
             else :
                 if piece_selected.movement_grid[position[0]][position[1]] == True:
-
-                    move_piece(piece_selected,board,position)
-                    
+                    move_piece(piece_selected,board,position,list_of_move)
                     screen_update(board,[])
-                    #turn = change_turn(turn)
+                    turn = change_turn(turn)
 
