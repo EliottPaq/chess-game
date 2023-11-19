@@ -6,27 +6,7 @@ class Piece () :
         self.position = position #as position [0] = y ; position[1] = x
         self.move_counter = 0 
         self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
-        self.movement_grid = [  # set the grid to the correct start position
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None], 
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None], 
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None]
-            ]
-    def reset_movement_grid (self) :
-        self.movement_grid = [  # set the grid to the correct start position
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None], 
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None], 
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None],
-            [None,None,None,None,None,None,None,None]
-            ]   
+        self.movement_list = []
     #def checkmate(self,grid,turn):
         #if turn == self.color :
             
@@ -56,46 +36,46 @@ class Pawn (Piece):
             if self.color == "W": #if the pawn is white
                 if self.position[0] == 6: #if the pawn is at his starting position
                     if grid[self.position[0]-1][self.position[1]] == None and grid[self.position[0]-2][self.position[1]] == None :
-                        self.movement_grid[self.position[0]-2][self.position[1]] = True #we had it playable board
+                        self.movement_list.append([self.position[0]-2,self.position[1]])#we had it playable board
                     
                 if self.position[1] != 0 : #if the Piece is not next to the left side of the board
                     if grid[self.position[0]-1][self.position[1]-1] != None and grid[self.position[0]-1][self.position[1]-1].color == "B" : # if there is a black Piece 
-                        self.movement_grid[self.position[0]-1][self.position[1]-1] = True #we had it playable board
+                        self.movement_list.append([self.position[0]-1,self.position[1]-1]) #we had it playable board
                     if self.position[0] == 3 :
                         if len(list_of_play) != 0 :
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]-1] and grid[self.position[0]][self.position[1]-1].move_counter == 1:
-                                self.movement_grid[self.position[0]-1][self.position[1]-1] = True
+                                self.movement_list.append([self.position[0]-1,self.position[1]-1])
                 if self.position[1] != 7 : #if the Piece is not next to the left side of the board
                     if grid[self.position[0]-1][self.position[1]+1] != None and grid[self.position[0]-1][self.position[1]+1].color == "B" : # if there is a black Piece
-                        self.movement_grid[self.position[0]-1][self.position[1]+1] = True #we had it playable board
+                        self.movement_list.append([self.position[0]-1,self.position[1]+1]) #we had it playable board
                     if self.position[0] == 3 :
                         if len(list_of_play) != 0 :
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]+1] and grid[self.position[0]][self.position[1]+1].move_counter == 1:
-                                self.movement_grid[self.position[0]-1][self.position[1]+1] = True
+                                self.movement_list.append([self.position[0]-1,self.position[1]+1])
                 if grid[self.position[0]-1][self.position[1]] == None:
-                    self.movement_grid[self.position[0]-1][self.position[1]] = True #if there is nothing in front of this pawn we had it to our mouvement grid
+                    self.movement_list.append([self.position[0]-1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mouvement grid
                     
             if self.color == "B":
                 if self.position[0] == 1: #if the pawn is at his starting position
                     if grid[self.position[0]+1][self.position[1]] == None and grid[self.position[0]+2][self.position[1]] == None :
-                        self.movement_grid[self.position[0]+2][self.position[1]] = True #we had it playable board
+                        self.movement_list.append([self.position[0]+2,self.position[1]]) #we had it playable board
                     
                 if self.position[1] != 0 : #if the Piece is not next to the right side of the board
                     if grid[self.position[0]+1][self.position[1]-1] != None and  grid[self.position[0]+1][self.position[1]-1].color == "W": # if there is a black Piece 
-                        self.movement_grid[self.position[0]+1][self.position[1]-1] = True #we had it playable board
+                        self.movement_list.append([self.position[0]+1,self.position[1]-1]) #we had it playable board
                     if self.position[0] == 4 :
                         if len(list_of_play) != 0 :
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]-1] and grid[self.position[0]][self.position[1]-1].move_counter == 1:
-                                self.movement_grid[self.position[0]+1][self.position[1]-1] = True
+                                self.movement_list.append([self.position[0]+1,self.position[1]-1])
                 if self.position[1] != 7 : #if the Piece is not next to the left side of the board
                     if grid[self.position[0]+1][self.position[1]+1] != None and  grid[self.position[0]+1][self.position[1]+1].color == "W": # if there is a black Piece
-                        self.movement_grid[self.position[0]+1][self.position[1]+1] = True #we had it playable board
+                        self.movement_list.append([self.position[0]+1,self.position[1]+1]) #we had it playable board
                     if self.position[0] == 4 :
                         if len(list_of_play) != 0 :
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]+1] and grid[self.position[0]][self.position[1]+1].move_counter == 1:
-                                self.movement_grid[self.position[0]+1][self.position[1]+1] = True
+                                self.movement_list.append([self.position[0]+1,self.position[1]+1])
                 if grid[self.position[0]+1][self.position[1]] == None:
-                    self.xment_grid[self.position[0]+1][self.position[1]] = True #if there is nothing in front of this pawn we had it to our mouvement grid
+                    self.movement_list.append([self.position[0]+1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mouvement grid
 
 
 class Rook (Piece):
@@ -143,17 +123,17 @@ class Rook (Piece):
                         if  isinstance(grid[7][4],King) :
                             if grid[7][4].move_counter == 0 :
                                 if grid[7][1] == None and grid[7][2] == None and grid[7][3] == None :
-                                    self.movement_grid[7][4] = True
+                                    self.movement_list.append([7,4])
                 if self.position == [7,7] :
                     if self.move_counter == 0 :
                         if isinstance(grid[7][4],King) :
                             if grid[7][4].move_counter == 0 :
                                 if grid[7][5] == None and grid[7][6] == None:
-                                    self.movement_grid[7][4] = True
+                                    self.movement_list.append([7,4])
                 for list in self.tempory_move:
                     for pos in list :
                         if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
-                            self.movement_grid[pos[0]][pos[1]] = True
+                            self.movement_list.append([pos[0],pos[1]])
                         
             elif self.color == "B": #if the Piece is Black we check for castle
                 if self.position == [0,0] :
@@ -161,17 +141,17 @@ class Rook (Piece):
                         if  isinstance(grid[0][4],King)  :
                             if grid[0][4].move_counter == 0 :
                                 if grid[0][1] == None and grid[0][2] == None and grid[0][3] == None :
-                                    self.movement_grid[0][4] = True
+                                    self.movement_list.append([0,4])
                 if self.position == [0,7] :
                     if self.move_counter == 0 :
                         if isinstance(grid[0][4],King)  :
                             if grid[0][4].move_counter == 0 :
                                 if grid[0][5] == None and grid[0][6] == None:
-                                    self.movement_grid[0][4] = True
+                                    self.movement_list.append([0,4])
                 for list in self.tempory_move:
                     for pos in list :
                         if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
-                            self.movement_grid[pos[0]][pos[1]] = True
+                            self.movement_list.append([pos[0],pos[1]])
                 
 
 class King (Piece):
@@ -201,17 +181,17 @@ class King (Piece):
                 if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
                     continue
                 if grid[position[0]][position[1]] == None :
-                    self.movement_grid[position[0]][position[1]] = True
+                    self.movement_list.append([position[0],position[1]])
                 elif grid[position[0]][position[1]].color == "B":
-                    self.movement_grid[position[0]][position[1]] = True
+                    self.movement_list.append([position[0],position[1]])
         else :
             for position in self.tempory_move : #we chech if the tempory position doesn't give on a black Piece
                 if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
                     continue
                 if grid[position[0]][position[1]] == None :
-                    self.movement_grid[position[0]][position[1]] = True
+                    self.movement_list.append([position[0],position[1]])
                 elif grid[position[0]][position[1]].color == "W":
-                    self.movement_grid[position[0]][position[1]] = True
+                    self.movement_list.append([position[0],position[1]])
         self.tempory_move.clear()
         
 class Queen (Piece):
@@ -287,12 +267,12 @@ class Queen (Piece):
                     for list in self.tempory_move:
                         for pos in list :
                             if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
-                                self.movement_grid[pos[0]][pos[1]] = True
+                                self.movement_list.append([pos[0],pos[1]])
                 else:
                     for list in self.tempory_move:
                         for pos in list :
                             if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
-                                self.movement_grid[pos[0]][pos[1]] = True
+                                self.movement_list.append([pos[0],pos[1]])
 
 
 
@@ -324,13 +304,13 @@ class Knight (Piece):
                     if pos[0]<0 or pos[0]>7 or pos[1]<0 or pos[1]>7 :
                         continue
                     if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
-                        self.movement_grid[pos[0]][pos[1]] = True
+                        self.movement_list.append([pos[0],pos[1]])
             else:
                 for pos in self.tempory_move:
                     if (pos[0]<0 or pos[0]>7) or (pos[1]<0 or pos[1]>7) :
                         continue
                     if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
-                        self.movement_grid[pos[0]][pos[1]] = True
+                        self.movement_list.append([pos[0],pos[1]])
 
 class Bishop (Piece) :
     def __init__ (self, color:str,position:list,sprite_pathing : str):
@@ -381,10 +361,10 @@ class Bishop (Piece) :
                 for list in self.tempory_move:
                     for pos in list :
                         if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="B":
-                            self.movement_grid[pos[0]][pos[1]] = True
+                            self.movement_list.append([pos[0],pos[1]])
             else:
                 for list in self.tempory_move:
                     for pos in list :
                         if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
-                            self.movement_grid[pos[0]][pos[1]] = True
+                            self.movement_list.append([pos[0],pos[1]])
 

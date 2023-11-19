@@ -56,28 +56,20 @@ def print_piece (grid:list) :
                 piece_surf = piece.sprite.get_rect(center = (axis_value[piece.position[1]]+37.5,axis_value[piece.position[0]]+37.5)) # 37.5 is the half of 37.5 by using this value we are placing our piece in the middle of each square
                 screen.blit(piece.sprite,piece_surf)
 
-def display_possibility (movement_grid:list) :
+def display_possibility (movement_list:list) :
     """
     this grid show the mouvement possible if you click on a piece
 
     Args:
-        movement_grid (list): _description_
+        movement_list (list): _description_
     """    
     axis_value = [0,75,150,225,300,375,450,525]
-    for y,line in enumerate(movement_grid) :
-        for x,state in enumerate(line) :
-            if  state == True:
-                pygame.draw.rect(screen,"yellow",[axis_value[x],axis_value[y],75,75])
+    for move in movement_list :
+        pygame.draw.rect(screen,"yellow",[axis_value[move[1]],axis_value[move[0]],75,75])
 
-def change_turn(turn:str) -> str :
-    if turn == "W" :
-        return "B"
-    return "W"
-
-def screen_update(board:list,movement_grid:list):
+def screen_update(board:list,movement_list:list):
     print_board()
-    if len(movement_grid) == 8 :
-        display_possibility(movement_grid)
+    display_possibility(movement_list)
     print_piece(board)
     pygame.display.flip() # we actualize the screen with all the modification
 
@@ -100,11 +92,23 @@ def move_piece(piece:object,board:list,position:list,list_of_move:list) :
         board[piece.position[0]][piece.position[1]] = None
         board[position[0]][position[1]].position = position
         
-    board[position[0]][position[1]].reset_movement_grid()
+    board[position[0]][position[1]].move()
     board[position[0]][position[1]].move_counter += 1
 
     list_of_move.append([piece.name,position])
 
+def try_all_move(board):
+    for line in board :
+        for piece in line :
+            if piece != None:
+                piece.move(board,turn,list_of_move)
+                for move in piece.movement_list:
+                    if board[move[0]][move[1]] :
+                        if board[move[0]][move[1]] != None and board[move[0]][move[1]].name == "K" and board[move[0]][move[1]].color != piece.color :
+                            return False
+    return True
+
+                
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
@@ -137,11 +141,13 @@ while True :
             if piece != None :
                 if piece.color == turn :
                     piece.move(board,turn,list_of_move)
-                    screen_update(board,piece.movement_grid)
+                    screen_update(board,piece.movement_list)
                     piece_selected = piece
             else :
-                if piece_selected.movement_grid[position[0]][position[1]] == True:
-                    move_piece(piece_selected,board,position,list_of_move)
-                    screen_update(board,[])
-                    turn = change_turn(turn)
+                for move in piece_selected.movement_list:
+                    if [position[0],position[1]] ==  move :
+                        move_piece(piece_selected,board,position,list_of_move)
+                        screen_update(board,[])
+                        if turn == "W" : turn = "B"
+                        else : turn = "W"
 
