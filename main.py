@@ -111,10 +111,15 @@ def move_piece(piece:object,board:list,position:list,list_of_move:list) :
             board[piece.position[0]][piece.position[1]] = None
             board[position[0]][position[1]].position = position
     else :
+        if piece.name == "P" and position[1]-1 == piece.position[1] or position[1]+1 == piece.position[1] :
+            if piece.color == "W":
+                board[position[0]+1][position[1]] = None
+            else:
+                board[position[0]-1][position[1]] = None
         board[position[0]][position[1]] = piece
         board[piece.position[0]][piece.position[1]] = None
         board[position[0]][position[1]].position = position
-
+    board[position[0]][position[1]].move_counter +=1
     list_of_move.append([piece.name,position])
 
 def try_all_move(board):
@@ -198,11 +203,11 @@ while True :
                         screen_update(board,[])
                         if turn == "W" : 
                             turn = "B"
-                        else : 
+                        else :
                             turn = "W"
-                        print(turn)
                         update_movement(board,turn,list_of_move)
                         break
+            print(turn)
 
 
 
