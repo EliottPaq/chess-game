@@ -58,7 +58,7 @@ def print_piece (grid:list) :
 
 def display_possibility (movement_list:list) :
     """
-    this grid show the mouvement possible if you click on a piece
+    this grid show the movement possible if you click on a piece
 
     Args:
         movement_list (list): _description_
@@ -80,20 +80,40 @@ def move_piece(piece:object,board:list,position:list,list_of_move:list) :
         piece (object): the peice we are mooving
         board (list): the board 
         position (list): the position we are mooving the piece to
-
+        list_of_move (list) : the list who stock all the move
     """
-    
-    if board[position[0]][position[1]] != None and board[position[0]][position[1]].color == piece.color :
-            board[piece.position[0]][piece.position[1]] = board[position[0]][position[1]]
+    if board[position[0]][position[1]] != None :
+        if board[position[0]][position[1]].color == piece.color :
+            if piece.color == "B" :
+                if piece.position ==[0,0]:
+                    board[0][3] = piece
+                    board[0][3].position = [0,3]
+                    board[0][2] = board[0][4]
+                    board[0][2].position = [0,2]
+                elif piece.position == [0,7] :
+                    board[0][5] = piece
+                    board[0][5].position = [0,5]
+                    board[0][6] = board[0][4]
+                    board[0][6].position = [0,6]
+            else:
+                if piece.position == [7,0] :
+                    board[7][3] = piece
+                    board[7][3].position = [7,3]
+                    board[7][2] = board[7][4]
+                    board[7][2].position = [7,2]
+                elif piece.position == [7,7] :
+                    board[7][5] = piece
+                    board[7][5].position = [7,5]
+                    board[7][6] = board[7][4]
+                    board[7][6].position = [7,6]
+        else :
             board[position[0]][position[1]] = piece
+            board[piece.position[0]][piece.position[1]] = None
             board[position[0]][position[1]].position = position
     else :
         board[position[0]][position[1]] = piece
         board[piece.position[0]][piece.position[1]] = None
         board[position[0]][position[1]].position = position
-        
-    board[position[0]][position[1]].move()
-    board[position[0]][position[1]].move_counter += 1
 
     list_of_move.append([piece.name,position])
 
@@ -108,7 +128,19 @@ def try_all_move(board):
                             return False
     return True
 
-                
+def update_movement ( board:list,turn:str,list_of_move :list) -> None :
+    """
+    update the movement of all the piece
+    Args:
+        board (list): the board
+        turn (str): who's turn
+        list_of_move (list) :list of all the plays
+    """
+    for line in board :
+        for piece in line :
+            if piece != None :
+                piece.move(board,turn,list_of_move)
+
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
@@ -124,11 +156,13 @@ board = [  # set the grid to the correct start position
         [Rook("W",[7,0],"piece\\tour_blanc.png"),Knight("W",[7,1],"piece\\cavalier_blanc.png"),Bishop("W",[7,2],"piece\\fou_blanc.png"),Queen("W",[7,3],"piece\\dame_blanc.png"),King("W",[7,4],"piece\\roi_blanc.png"),Bishop("W",[7,5],"piece\\fou_blanc.png"),Knight("W",[7,6],"piece\\cavalier_blanc.png"),Rook("W",[7,7],"piece\\tour_blanc.png")]
         ]
 turn = "W"
-piece_is_selected = False
 print_board()
+update_movement(board,turn,[])
 print_piece(board)
 pygame.display.flip() # we actualize the screen with all the modification
 list_of_move = []
+piece_moved = False
+piece_selected = None
 while True : 
 
     for event in pygame.event.get():
@@ -138,16 +172,40 @@ while True :
         if event.type == pygame.MOUSEBUTTONDOWN : 
             position = where_am_i(pygame.mouse.get_pos())  # we know where on the grid the player click
             piece = board[position[0]][position[1]]
+            
             if piece != None :
-                if piece.color == turn :
-                    piece.move(board,turn,list_of_move)
+                if piece_selected != None :
+                    for move in piece_selected.movement_list:
+                        if [position[0],position[1]] ==  move :
+                            move_piece(piece_selected,board,position,list_of_move)
+                            screen_update(board,[])
+                            if turn == "W" : 
+                                turn = "B"
+                            else : 
+                                turn = "W"
+                            update_movement(board,turn,list_of_move)
+                            piece_moved = True
+                            break
+                if not piece_moved :
                     screen_update(board,piece.movement_list)
                     piece_selected = piece
+                piece_moved = False
+                
             else :
                 for move in piece_selected.movement_list:
                     if [position[0],position[1]] ==  move :
                         move_piece(piece_selected,board,position,list_of_move)
                         screen_update(board,[])
-                        if turn == "W" : turn = "B"
-                        else : turn = "W"
+                        if turn == "W" : 
+                            turn = "B"
+                        else : 
+                            turn = "W"
+                        print(turn)
+                        update_movement(board,turn,list_of_move)
+                        break
+
+
+
+
+
 

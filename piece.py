@@ -7,9 +7,7 @@ class Piece () :
         self.move_counter = 0 
         self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
         self.movement_list = []
-    #def checkmate(self,grid,turn):
-        #if turn == self.color :
-            
+
 
 class Pawn (Piece):
     
@@ -33,6 +31,7 @@ class Pawn (Piece):
             list: list of all the move possible of the pawn
         """
         if self.color == turn:
+            self.movement_list = []
             if self.color == "W": #if the pawn is white
                 if self.position[0] == 6: #if the pawn is at his starting position
                     if grid[self.position[0]-1][self.position[1]] == None and grid[self.position[0]-2][self.position[1]] == None :
@@ -176,23 +175,22 @@ class King (Piece):
             self.tempory_move.append([self.position[0]+1,self.position[1]-1])
             self.tempory_move.append([self.position[0]+1,self.position[1]+1])
             self.tempory_move.append([self.position[0]+1,self.position[1]])
-        if self.color == "W":
-            for position in self.tempory_move : #we chech if the tempory position doesn't give on a white Piece
-                if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
-                    continue
-                if grid[position[0]][position[1]] == None :
-                    self.movement_list.append([position[0],position[1]])
-                elif grid[position[0]][position[1]].color == "B":
-                    self.movement_list.append([position[0],position[1]])
-        else :
-            for position in self.tempory_move : #we chech if the tempory position doesn't give on a black Piece
-                if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
-                    continue
-                if grid[position[0]][position[1]] == None :
-                    self.movement_list.append([position[0],position[1]])
-                elif grid[position[0]][position[1]].color == "W":
-                    self.movement_list.append([position[0],position[1]])
-        self.tempory_move.clear()
+            if self.color == "W":
+                for position in self.tempory_move : #we chech if the tempory position doesn't give on a white Piece
+                    if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
+                        continue
+                    if grid[position[0]][position[1]] == None :
+                        self.movement_list.append([position[0],position[1]])
+                    elif grid[position[0]][position[1]].color == "B":
+                        self.movement_list.append([position[0],position[1]])
+            else :
+                for position in self.tempory_move : #we chech if the tempory position doesn't give on a black Piece
+                    if (position[0]<0 or position[0]>7) or (position[1]<0 or position[1]>7) :
+                        continue
+                    if grid[position[0]][position[1]] == None :
+                        self.movement_list.append([position[0],position[1]])
+                    elif grid[position[0]][position[1]].color == "W":
+                        self.movement_list.append([position[0],position[1]])
         
 class Queen (Piece):
     def __init__(self, color:str,position:list,sprite_pathing : str):
