@@ -6,8 +6,6 @@ class Piece () :
         self.position = position #as position [0] = y ; position[1] = x
         self.move_counter = 0 
         self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
-        self.movement_list = []
-
 
 class Pawn (Piece):
     
@@ -52,7 +50,7 @@ class Pawn (Piece):
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]+1] and grid[self.position[0]][self.position[1]+1].move_counter == 1:
                                 self.movement_list.append([self.position[0]-1,self.position[1]+1])
                 if grid[self.position[0]-1][self.position[1]] == None:
-                    self.movement_list.append([self.position[0]-1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mouvement grid
+                    self.movement_list.append([self.position[0]-1,self.position[1]]) #if there is nothing in front of this pawn we had it to our movement grid
                     
             if self.color == "B":
                 if self.position[0] == 1: #if the pawn is at his starting position
@@ -74,8 +72,7 @@ class Pawn (Piece):
                             if list_of_play[-1][0] == "P" and list_of_play[-1][1] == [self.position[0],self.position[1]+1] and grid[self.position[0]][self.position[1]+1].move_counter == 1:
                                 self.movement_list.append([self.position[0]+1,self.position[1]+1])
                 if grid[self.position[0]+1][self.position[1]] == None:
-                    self.movement_list.append([self.position[0]+1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mouvement grid
-
+                    self.movement_list.append([self.position[0]+1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mo vement grid
 
 class Rook (Piece):
     def __init__(self, color:str,position:list,sprite_pathing:str):
@@ -96,6 +93,7 @@ class Rook (Piece):
             list: list of all the move possible of the pawn
         """
         if self.color == turn:
+            self.movement_list = []
             self.tempory_move = [[],[]] #stock all the move before checking the color of the Piece , the first list is for all the x axis move the second is for the y axis move
             for pos,element in enumerate(grid[self.position[0]]):
                 if pos<self.position[1]:
@@ -151,7 +149,6 @@ class Rook (Piece):
                     for pos in list :
                         if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
                             self.movement_list.append([pos[0],pos[1]])
-                
 
 class King (Piece):
     def __init__(self, color:str,position:list,sprite_pathing : str):
@@ -166,6 +163,7 @@ class King (Piece):
             list_of_play(list) : the list of all the play
         """
         if self.color == turn:
+            self.movement_list = []
             self.tempory_move = []
             self.tempory_move.append([self.position[0]-1,self.position[1]]) #we add all the possible direction 
             self.tempory_move.append([self.position[0]-1,self.position[1]-1])
@@ -191,7 +189,7 @@ class King (Piece):
                         self.movement_list.append([position[0],position[1]])
                     elif grid[position[0]][position[1]].color == "W":
                         self.movement_list.append([position[0],position[1]])
-        
+
 class Queen (Piece):
     def __init__(self, color:str,position:list,sprite_pathing : str):
         super().__init__(color,position,sprite_pathing)
@@ -206,6 +204,7 @@ class Queen (Piece):
 
         """
         if self.color == turn:
+            self.movement_list = []
             self.tempory_move = [[],[],[],[]] #stock all the move before checking the color of the Piece ,the first list stock the diagonale moove and the second the horizontal and vertical move
             for pos,element in enumerate(grid[self.position[0]]):
                 if pos<self.position[1]:
@@ -272,8 +271,6 @@ class Queen (Piece):
                             if grid[pos[0]][pos[1]] == None or grid[pos[0]][pos[1]].color =="W":
                                 self.movement_list.append([pos[0],pos[1]])
 
-
-
 class Knight (Piece):
     def __init__(self, color:str,position:list,sprite_pathing : str):
         super().__init__(color,position,sprite_pathing)
@@ -287,6 +284,7 @@ class Knight (Piece):
             list_of_play(list) : the list of all the play
         """        
         if self.color == turn:
+            self.movement_list = []
             self.tempory_move = []
             self.tempory_move.append([self.position[0]+2,self.position[1]+1])
             self.tempory_move.append([self.position[0]+2,self.position[1]-1])
@@ -322,8 +320,9 @@ class Bishop (Piece) :
             turn (str): who's turn
             list_of_play(list) : the list of all the play played
         """
-        self.wall_checker = False
         if self.color == turn:
+            self.movement_list = []
+            self.wall_checker = False
             self.tempory_move = [[],[]] #stock all the move before checking the color of the Piece , the first list is for all the diagonal →↓ move the second is for the diagonal →↑ move
             for y_axis in range(len(grid)):
                 for x_axis in range(len(grid[y_axis])):
