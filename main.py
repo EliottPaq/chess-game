@@ -140,7 +140,46 @@ def update_movement ( board:list,turn:str,list_of_move :list) -> None :
             if piece != None :
                 piece.move(board,turn,list_of_move)
 
+def check(move:list,board:list,piece_selected:object,turn:str,list_of_move:list)->None:
+    """
+        return false if there is a check 
+    Args:
+        move (list): the move we are trying to do
+        board (list): our current grid
+    """
     
+    second_board = board
+    second_list_of_move = list_of_move
+    move_piece(piece_selected,board,move,list_of_move)
+    if turn == "W" :
+        update_movement(second_board,"B",second_list_of_move)
+        for line in second_board :
+            for piece in line:
+                if piece != None:
+                    if piece.color == "B" :
+                        for move_of_piece in piece.movement_list:
+                            if second_board[move_of_piece[0]][move_of_piece[1]] != None and second_board[move_of_piece[0]][move_of_piece[1]].name == "K" and second_board[move_of_piece[0]][move_of_piece[1]].color == "W" :
+                                board = second_board
+                                list_of_move = second_list_of_move
+                                print("echec")
+                                print(piece)
+                                return False
+    else:
+        update_movement(second_board,"W",second_list_of_move)
+        for line in second_board :
+            for piece in line:
+                if piece != None:
+                    if piece.color == "W":
+                        for move_of_piece in piece.movement_list:
+                            if second_board[move_of_piece[0]][move_of_piece[1]] != None and second_board[move_of_piece[0]][move_of_piece[1]].name == "K" and second_board[move_of_piece[0]][move_of_piece[1]].color == "B" :
+                                board = second_board
+                                list_of_move = second_list_of_move
+                                print("echec")
+                                print(piece)
+                                return False
+    board = second_board
+    list_of_move = second_list_of_move
+    return True
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
@@ -175,16 +214,15 @@ while True :
                 if piece_selected.color == turn :
                     for move in piece_selected.movement_list:
                         if move ==  position :
-                            move_piece(piece_selected,board,position,list_of_move)
-                            if turn == "W" : 
-                                turn = "B"
-                            else : 
-                                turn = "W"
-                            update_movement(board,turn,list_of_move)
-                            piece_selected = None
-                            screen_update(board,[])
-                            have_move = True
-                            break
+                            if check(position,board,piece_selected,turn,list_of_move) :
+                                if turn == "W" : 
+                                    turn = "B"
+                                else : 
+                                    turn = "W"
+                                piece_selected = None
+                                screen_update(board,[])
+                                have_move = True
+                                break
             if not have_move and piece != None and piece.color == turn:
                 piece_selected = piece
                 screen_update(board,piece_selected.movement_list)

@@ -6,6 +6,7 @@ class Piece () :
         self.position = position #as position [0] = y ; position[1] = x
         self.move_counter = 0 
         self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
+        self.movement_list = []
 
 class Pawn (Piece):
     
