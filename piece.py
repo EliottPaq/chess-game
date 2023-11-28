@@ -1,17 +1,18 @@
 import pygame
 
 class Piece () :
-    def __init__(self,color:str,position:list(),sprite_pathing :str):
+    def __init__(self,color:str,position:list(),sprite_pathing :str,number_of_move:int):
         self.color = color
         self.position = position #as position [0] = y ; position[1] = x
-        self.move_counter = 0 
-        self.sprite = pygame.transform.smoothscale(pygame.image.load(sprite_pathing).convert_alpha(),(60,60))
+        self.move_counter = number_of_move
+        self.sprite_pathing = sprite_pathing
+        self.sprite = pygame.transform.smoothscale(pygame.image.load(self.sprite_pathing).convert_alpha(),(60,60))
         self.movement_list = []
 
 class Pawn (Piece):
     
-    def __init__(self, color:str,position:list,sprite_pathing : str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__(self, color:str,position:list,sprite_pathing : str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "P"
     def move(self,grid:list,turn:str,list_of_play:list) -> list :
         """
@@ -76,8 +77,8 @@ class Pawn (Piece):
                     self.movement_list.append([self.position[0]+1,self.position[1]]) #if there is nothing in front of this pawn we had it to our mo vement grid
 
 class Rook (Piece):
-    def __init__(self, color:str,position:list,sprite_pathing:str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__(self, color:str,position:list,sprite_pathing:str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "R"
     def move(self,grid:list,turn:str,list_of_play:list) -> list :
         """ 
@@ -152,8 +153,8 @@ class Rook (Piece):
                             self.movement_list.append([pos[0],pos[1]])
 
 class King (Piece):
-    def __init__(self, color:str,position:list,sprite_pathing : str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__(self, color:str,position:list,sprite_pathing : str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "K"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """the king can move only one square around him
@@ -192,8 +193,8 @@ class King (Piece):
                         self.movement_list.append([position[0],position[1]])
 
 class Queen (Piece):
-    def __init__(self, color:str,position:list,sprite_pathing : str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__(self, color:str,position:list,sprite_pathing : str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "Q"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """
@@ -273,8 +274,8 @@ class Queen (Piece):
                                 self.movement_list.append([pos[0],pos[1]])
 
 class Knight (Piece):
-    def __init__(self, color:str,position:list,sprite_pathing : str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__(self, color:str,position:list,sprite_pathing : str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "N"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """
@@ -310,8 +311,8 @@ class Knight (Piece):
                         self.movement_list.append([pos[0],pos[1]])
 
 class Bishop (Piece) :
-    def __init__ (self, color:str,position:list,sprite_pathing : str):
-        super().__init__(color,position,sprite_pathing)
+    def __init__ (self, color:str,position:list,sprite_pathing : str,number_of_move:int):
+        super().__init__(color,position,sprite_pathing,number_of_move)
         self.name = "B"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """

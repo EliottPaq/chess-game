@@ -1,5 +1,6 @@
 import pygame
 from piece import *
+import copy
 
 def print_board () :
     """
@@ -73,59 +74,60 @@ def screen_update(board:list,movement_list:list):
     print_piece(board)
     pygame.display.flip() # we actualize the screen with all the modification
 
-def move_piece(piece:object,board:list,position:list,list_of_move:list) :
+def move_piece(piece:object,board1:list,position:list,list_of_move:list) :
     """
         move the piece 
     Args:
         piece (object): the piece we are mooving
-        board (list): the board 
+        board1 (list): the board1 
         position (list): the position we are mooving the piece to
         list_of_move (list) : the list who stock all the move
     """
-    if board[position[0]][position[1]] != None :
-        if board[position[0]][position[1]].color == piece.color :
+    if board1[position[0]][position[1]] != None :
+        if board1[position[0]][position[1]].color == piece.color :
             if piece.color == "B" :
                 if piece.position ==[0,0]:
-                    board[0][3] = piece
-                    board[0][3].position = [0,3]
-                    board[0][2] = board[0][4]
-                    board[0][2].position = [0,2]
+                    board1[0][3] = piece
+                    board1[0][3].position = [0,3]
+                    board1[0][2] = board1[0][4]
+                    board1[0][2].position = [0,2]
                 elif piece.position == [0,7] :
-                    board[0][5] = piece
-                    board[0][5].position = [0,5]
-                    board[0][6] = board[0][4]
-                    board[0][6].position = [0,6]
+                    board1[0][5] = piece
+                    board1[0][5].position = [0,5]
+                    board1[0][6] = board1[0][4]
+                    board1[0][6].position = [0,6]
             else:
                 if piece.position == [7,0] :
-                    board[7][3] = piece
-                    board[7][3].position = [7,3]
-                    board[7][2] = board[7][4]
-                    board[7][2].position = [7,2]
+                    board1[7][3] = piece
+                    board1[7][3].position = [7,3]
+                    board1[7][2] = board1[7][4]
+                    board1[7][2].position = [7,2]
                 elif piece.position == [7,7] :
-                    board[7][5] = piece
-                    board[7][5].position = [7,5]
-                    board[7][6] = board[7][4]
-                    board[7][6].position = [7,6]
+                    board1[7][5] = piece
+                    board1[7][5].position = [7,5]
+                    board1[7][6] = board1[7][4]
+                    board1[7][6].position = [7,6]
         else :
-            board[position[0]][position[1]] = piece
-            board[piece.position[0]][piece.position[1]] = None
-            board[position[0]][position[1]].position = position
+            board1[position[0]][position[1]] = piece
+            board1[piece.position[0]][piece.position[1]] = None
+            board1[position[0]][position[1]].position = position
     else :
         if piece.name == "P" and (position[1]-1 == piece.position[1] or position[1]+1 == piece.position[1]) :
             if piece.color == "W":
-                board[position[0]+1][position[1]] = None
+                board1[position[0]+1][position[1]] = None
             else:
-                board[position[0]-1][position[1]] = None
-        board[position[0]][position[1]] = piece
-        board[piece.position[0]][piece.position[1]] = None
-        board[position[0]][position[1]].position = position
+                board1[position[0]-1][position[1]] = None
+        board1[position[0]][position[1]] = piece
+        board1[piece.position[0]][piece.position[1]] = None
+        board1[position[0]][position[1]].position = position
     if piece.name == "P" and position[0] == 0 :
-        board[position[0]][position[1]] = Queen("W",position,"piece\\dame_blanc.png")
+        board1[position[0]][position[1]] = Queen("W",position,"piece\\dame_blanc.png")
     elif piece.name == "P" and position[0] == 7 :
-        board[position[0]][position[1]] = Queen("W",position,"piece\\dame_noir.png")
+        board1[position[0]][position[1]] = Queen("W",position,"piece\\dame_noir.png")
 
-    board[position[0]][position[1]].move_counter +=1
+    board1[position[0]][position[1]].move_counter +=1
     list_of_move.append([piece.name,position])
+    
 
 def update_movement ( board:list,turn:str,list_of_move :list) -> None :
     """
@@ -140,60 +142,60 @@ def update_movement ( board:list,turn:str,list_of_move :list) -> None :
             if piece != None :
                 piece.move(board,turn,list_of_move)
 
-def check(move:list,board:list,piece_selected:object,turn:str,list_of_move:list)->None:
+def check(position:list,board:list,piece_selected:object,turn:str,list_of_move:list)->None:
     """
         return false if there is a check 
     Args:
-        move (list): the move we are trying to do
+        position (list): the move we are trying to do
         board (list): our current grid
     """
-    
-    second_board = board
-    second_list_of_move = list_of_move
-    move_piece(piece_selected,board,move,list_of_move)
+
+    move_piece(piece_selected,board,position,list_of_move)
     if turn == "W" :
-        update_movement(second_board,"B",second_list_of_move)
-        for line in second_board :
+        update_movement(board,"B",list_of_move)
+        for line in board :
             for piece in line:
                 if piece != None:
                     if piece.color == "B" :
                         for move_of_piece in piece.movement_list:
-                            if second_board[move_of_piece[0]][move_of_piece[1]] != None and second_board[move_of_piece[0]][move_of_piece[1]].name == "K" and second_board[move_of_piece[0]][move_of_piece[1]].color == "W" :
-                                board = second_board
-                                list_of_move = second_list_of_move
-                                print("echec")
-                                print(piece)
+                            if board[move_of_piece[0]][move_of_piece[1]] != None and board[move_of_piece[0]][move_of_piece[1]].name == "K" and board[move_of_piece[0]][move_of_piece[1]].color == "W" :
                                 return False
     else:
-        update_movement(second_board,"W",second_list_of_move)
-        for line in second_board :
+        update_movement(board,"W",list_of_move)
+        for line in board :
             for piece in line:
                 if piece != None:
                     if piece.color == "W":
                         for move_of_piece in piece.movement_list:
-                            if second_board[move_of_piece[0]][move_of_piece[1]] != None and second_board[move_of_piece[0]][move_of_piece[1]].name == "K" and second_board[move_of_piece[0]][move_of_piece[1]].color == "B" :
-                                board = second_board
-                                list_of_move = second_list_of_move
-                                print("echec")
-                                print(piece)
+                            if board[move_of_piece[0]][move_of_piece[1]] != None and board[move_of_piece[0]][move_of_piece[1]].name == "K" and board[move_of_piece[0]][move_of_piece[1]].color == "B" :
                                 return False
-    board = second_board
-    list_of_move = second_list_of_move
     return True
+
 pygame.init() #initalize pygame 
 screen = pygame.display.set_mode((600,600)) # set the size of the window
 pygame.display.set_caption("echec") # set the name 
 
-board = [  # set the grid to the correct start position
-        [Rook("B",[0,0],"piece\\tour_noir.png"),Knight("B",[0,1],"piece\\cavalier_noir.png"),Bishop("B",[0,2],"piece\\fou_noir.png"),Queen("B",[0,3],"piece\\dame_noir.png"),King("B",[0,4],"piece\\roi_noir.png"),Bishop("B",[0,5],"piece\\fou_noir.png"),Knight("B",[0,6],"piece\\cavalier_noir.png"),Rook("B",[0,7],"piece\\tour_noir.png")],
-        [Pawn("B",[1,0],"piece\\pion_noir.png"),Pawn("B",[1,1],"piece\\pion_noir.png"),Pawn("B",[1,2],"piece\\pion_noir.png"),Pawn("B",[1,3],"piece\\pion_noir.png"),Pawn("B",[1,4],"piece\\pion_noir.png"),Pawn("B",[1,5],"piece\\pion_noir.png"),Pawn("B",[1,6],"piece\\pion_noir.png"),Pawn("B",[1,7],"piece\\pion_noir.png")],
+board = [ # set the grid to the correct start position
+        [Rook("B",[0,0],"piece\\tour_noir.png",0),Knight("B",[0,1],"piece\\cavalier_noir.png",0),Bishop("B",[0,2],"piece\\fou_noir.png",0),Queen("B",[0,3],"piece\\dame_noir.png",0),King("B",[0,4],"piece\\roi_noir.png",0),Bishop("B",[0,5],"piece\\fou_noir.png",0),Knight("B",[0,6],"piece\\cavalier_noir.png",0),Rook("B",[0,7],"piece\\tour_noir.png",0)],
+        [Pawn("B",[1,0],"piece\\pion_noir.png",0),Pawn("B",[1,1],"piece\\pion_noir.png",0),Pawn("B",[1,2],"piece\\pion_noir.png",0),Pawn("B",[1,3],"piece\\pion_noir.png",0),Pawn("B",[1,4],"piece\\pion_noir.png",0),Pawn("B",[1,5],"piece\\pion_noir.png",0),Pawn("B",[1,6],"piece\\pion_noir.png",0),Pawn("B",[1,7],"piece\\pion_noir.png",0)],
         [None,None,None,None,None,None,None,None], 
         [None,None,None,None,None,None,None,None],
         [None,None,None,None,None,None,None,None],
         [None,None,None,None,None,None,None,None],
-        [Pawn("W",[6,0],"piece\\pion_blanc.png"),Pawn("W",[6,1],"piece\\pion_blanc.png"),Pawn("W",[6,2],"piece\\pion_blanc.png"),Pawn("W",[6,3],"piece\\pion_blanc.png"),Pawn("W",[6,4],"piece\\pion_blanc.png"),Pawn("W",[6,5],"piece\\pion_blanc.png"),Pawn("W",[6,6],"piece\\pion_blanc.png"),Pawn("W",[6,7],"piece\\pion_blanc.png")],
-        [Rook("W",[7,0],"piece\\tour_blanc.png"),Knight("W",[7,1],"piece\\cavalier_blanc.png"),Bishop("W",[7,2],"piece\\fou_blanc.png"),Queen("W",[7,3],"piece\\dame_blanc.png"),King("W",[7,4],"piece\\roi_blanc.png"),Bishop("W",[7,5],"piece\\fou_blanc.png"),Knight("W",[7,6],"piece\\cavalier_blanc.png"),Rook("W",[7,7],"piece\\tour_blanc.png")]
+        [Pawn("W",[6,0],"piece\\pion_blanc.png",0),Pawn("W",[6,1],"piece\\pion_blanc.png",0),Pawn("W",[6,2],"piece\\pion_blanc.png",0),Pawn("W",[6,3],"piece\\pion_blanc.png",0),Pawn("W",[6,4],"piece\\pion_blanc.png",0),Pawn("W",[6,5],"piece\\pion_blanc.png",0),Pawn("W",[6,6],"piece\\pion_blanc.png",0),Pawn("W",[6,7],"piece\\pion_blanc.png",0)],
+        [Rook("W",[7,0],"piece\\tour_blanc.png",0),Knight("W",[7,1],"piece\\cavalier_blanc.png",0),Bishop("W",[7,2],"piece\\fou_blanc.png",0),Queen("W",[7,3],"piece\\dame_blanc.png",0),King("W",[7,4],"piece\\roi_blanc.png",0),Bishop("W",[7,5],"piece\\fou_blanc.png",0),Knight("W",[7,6],"piece\\cavalier_blanc.png",0),Rook("W",[7,7],"piece\\tour_blanc.png",0)]
         ]
+second_board = [ # set the grid to the correct start position
+        [Rook("B",[0,0],"piece\\tour_noir.png",0),Knight("B",[0,1],"piece\\cavalier_noir.png",0),Bishop("B",[0,2],"piece\\fou_noir.png",0),Queen("B",[0,3],"piece\\dame_noir.png",0),King("B",[0,4],"piece\\roi_noir.png",0),Bishop("B",[0,5],"piece\\fou_noir.png",0),Knight("B",[0,6],"piece\\cavalier_noir.png",0),Rook("B",[0,7],"piece\\tour_noir.png",0)],
+        [Pawn("B",[1,0],"piece\\pion_noir.png",0),Pawn("B",[1,1],"piece\\pion_noir.png",0),Pawn("B",[1,2],"piece\\pion_noir.png",0),Pawn("B",[1,3],"piece\\pion_noir.png",0),Pawn("B",[1,4],"piece\\pion_noir.png",0),Pawn("B",[1,5],"piece\\pion_noir.png",0),Pawn("B",[1,6],"piece\\pion_noir.png",0),Pawn("B",[1,7],"piece\\pion_noir.png",0)],
+        [None,None,None,None,None,None,None,None], 
+        [None,None,None,None,None,None,None,None],
+        [None,None,None,None,None,None,None,None],
+        [None,None,None,None,None,None,None,None],
+        [Pawn("W",[6,0],"piece\\pion_blanc.png",0),Pawn("W",[6,1],"piece\\pion_blanc.png",0),Pawn("W",[6,2],"piece\\pion_blanc.png",0),Pawn("W",[6,3],"piece\\pion_blanc.png",0),Pawn("W",[6,4],"piece\\pion_blanc.png",0),Pawn("W",[6,5],"piece\\pion_blanc.png",0),Pawn("W",[6,6],"piece\\pion_blanc.png",0),Pawn("W",[6,7],"piece\\pion_blanc.png",0)],
+        [Rook("W",[7,0],"piece\\tour_blanc.png",0),Knight("W",[7,1],"piece\\cavalier_blanc.png",0),Bishop("W",[7,2],"piece\\fou_blanc.png",0),Queen("W",[7,3],"piece\\dame_blanc.png",0),King("W",[7,4],"piece\\roi_blanc.png",0),Bishop("W",[7,5],"piece\\fou_blanc.png",0),Knight("W",[7,6],"piece\\cavalier_blanc.png",0),Rook("W",[7,7],"piece\\tour_blanc.png",0)]
+        ]
+
 turn = "W"
 print_board()
 update_movement(board,turn,[])
@@ -202,6 +204,7 @@ pygame.display.flip() # we actualize the screen with all the modification
 list_of_move = []
 piece_selected = None
 have_move = False
+
 while True : 
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # if the user quit the game end it
@@ -215,13 +218,52 @@ while True :
                     for move in piece_selected.movement_list:
                         if move ==  position :
                             if check(position,board,piece_selected,turn,list_of_move) :
+                                for y in range(len(board)):
+                                    for x in range(len(board[y])):
+                                        if board[y][x] != None and board[y][x].name == "P" :
+                                            second_board[y][x] = Pawn(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        elif board[y][x] != None and board[y][x].name == "K" :
+                                            second_board[y][x] = King(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        elif board[y][x] != None and board[y][x].name == "R" :
+                                            second_board[y][x] = Rook(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        elif board[y][x] != None and board[y][x].name == "Q" :
+                                            second_board[y][x] = Queen(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        elif board[y][x] != None and board[y][x].name == "B" :
+                                            second_board[y][x] = Bishop(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        elif board[y][x] != None and board[y][x].name == "N" :
+                                            second_board[y][x] = Knight(board[y][x].color,board[y][x].position,board[y][x].sprite_pathing,board[y][x].move_counter)
+                                        else:
+                                            second_board[y][x] = None
                                 if turn == "W" : 
                                     turn = "B"
                                 else : 
                                     turn = "W"
-                                piece_selected = None
+                                update_movement(second_board,turn,list_of_move)
                                 screen_update(board,[])
+                                piece_selected = None
                                 have_move = True
+                                break
+                            else:
+                                for y in range(len(board)):
+                                    for x in range(len(board[y])):
+                                        if second_board[y][x] != None and second_board[y][x].name == "P" :
+                                            board[y][x] = Pawn(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        elif second_board[y][x] != None and second_board[y][x].name == "K" :
+                                            board[y][x] = King(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        elif second_board[y][x] != None and second_board[y][x].name == "R" :
+                                            board[y][x] = Rook(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        elif second_board[y][x] != None and second_board[y][x].name == "Q" :
+                                            board[y][x] = Queen(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        elif second_board[y][x] != None and second_board[y][x].name == "B" :
+                                            board[y][x] = Bishop(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        elif second_board[y][x] != None and second_board[y][x].name == "N" :
+                                            board[y][x] = Knight(second_board[y][x].color,second_board[y][x].position,second_board[y][x].sprite_pathing,second_board[y][x].move_counter)
+                                        else:
+                                            board[y][x] = None
+                                update_movement(board,turn,list_of_move)
+                                
+                                screen_update(board,[])
+                                piece_selected = None
                                 break
             if not have_move and piece != None and piece.color == turn:
                 piece_selected = piece
