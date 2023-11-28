@@ -1,6 +1,5 @@
 import pygame
 from piece import *
-import copy
 
 def print_board () :
     """
