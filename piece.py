@@ -1,7 +1,7 @@
 import pygame
 
 class Piece () :
-    def __init__(self,color:str,position:list(),sprite_pathing :str,number_of_move:int):
+    def __init__(self,color:str,position:list,sprite_pathing :str,number_of_move:int):
         self.color = color
         self.position = position #as position [0] = y ; position[1] = x
         self.move_counter = number_of_move
@@ -84,7 +84,7 @@ class Rook (Piece):
         """ 
         rules the rook has to respect to move :
             -Eat pieces vertically and horizontally
-            -can rock
+            -can castling
 
         Args:
             grid (list): the current grid with the pawn
@@ -158,7 +158,7 @@ class King (Piece):
         self.name = "K"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """ The king can move only one square around him
-
+            or he can casling but only if the rook and the king haven't moove and no piece are between those two piece
         Args:
             grid (list): the grid 
             turn (str): who's turn
@@ -198,7 +198,7 @@ class Queen (Piece):
         self.name = "Q"
     def move(self,grid:list,turn:str,list_of_play:list) :
         """
-        the queen is the combination of all the move off the rock and the Bishop
+        the queen is the combination of all the move off the rook and the Bishop
         Args:
             grid (list): the grid
             turn (str): who's turn

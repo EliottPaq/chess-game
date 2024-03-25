@@ -90,7 +90,7 @@ def move_piece(piece:object,board:list,position:list,list_of_move:list) :
         list_of_move (list): the list who stocks all the move
     """
     if board[position[0]][position[1]] != None : #if we aren't moving to an empty squares
-        if board[position[0]][position[1]].color == piece.color: #if the piece is going to be a piece of the same color it can only be a rock
+        if board[position[0]][position[1]].color == piece.color: #if the piece is going to be a piece of the same color it can only be a castling
             if piece.color == "B" :
                 if piece.position ==[0,0]:
                     board[0][3] = piece
@@ -230,8 +230,8 @@ def checkmate (board:list,second_board:list,turn:str,list_of_move:list)->bool:
         return True if there is a checkmate False otherwise
         
         A checkmate respects two conditions:-the king can't go anwere without being eaten 
-                                           -no piece can go between or on the piece who check and the king
-                                           -if the king can't go anywere without being eaten and there 2 pieces or more checking him it's a checkmate
+                                            -no piece can go between or on the piece who check and the king
+                                            -if the king can't go anywere without being eaten and there 2 pieces or more checking him it's a checkmate
     Args:
         board (list): the board
         second_board (list): a second board that is a copy of the first one
@@ -415,7 +415,7 @@ while True :
                             if move ==  position :
                                 if check(position,board,piece_selected,turn,list_of_move) :
                                     clone_board(board,second_board)
-                                    if checkmate(board,second_board,turn,list_of_move)or equality_verificator(board,turn):
+                                    if checkmate(board,second_board,turn,list_of_move) or equality_verificator(board,turn,second_board,list_of_move):
                                         screen_update(board,[])
                                         game_end=True
                                         break
@@ -459,7 +459,6 @@ while True :
                         [Pawn("W",[6,0],"piece\\pion_blanc.png",0),Pawn("W",[6,1],"piece\\pion_blanc.png",0),Pawn("W",[6,2],"piece\\pion_blanc.png",0),Pawn("W",[6,3],"piece\\pion_blanc.png",0),Pawn("W",[6,4],"piece\\pion_blanc.png",0),Pawn("W",[6,5],"piece\\pion_blanc.png",0),Pawn("W",[6,6],"piece\\pion_blanc.png",0),Pawn("W",[6,7],"piece\\pion_blanc.png",0)],
                         [Rook("W",[7,0],"piece\\tour_blanc.png",0),Knight("W",[7,1],"piece\\cavalier_blanc.png",0),Bishop("W",[7,2],"piece\\fou_blanc.png",0),Queen("W",[7,3],"piece\\dame_blanc.png",0),King("W",[7,4],"piece\\roi_blanc.png",0),Bishop("W",[7,5],"piece\\fou_blanc.png",0),Knight("W",[7,6],"piece\\cavalier_blanc.png",0),Rook("W",[7,7],"piece\\tour_blanc.png",0)]
                         ]
-
                 turn = "W"
                 print_board()
                 update_movement(board,turn,[])
